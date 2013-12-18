@@ -1,5 +1,7 @@
 package com.akoscz.youtube;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -25,7 +27,21 @@ public class YouTubeActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.youtube_activity);
 
-        if (savedInstanceState == null) {
+        if (ApiKey.YOUTUBE_API_KEY.startsWith("YOUR_API_KEY")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setMessage("Edit ApiKey.java and replace \"YOUR_API_KEY\" with your Applications Browser API Key")
+                        .setTitle("Missing API Key")
+                        .setNeutralButton("Ok, I got it!", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                finish();
+                            }
+                        });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+        } else if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new YouTubeFragment())
                     .commit();
