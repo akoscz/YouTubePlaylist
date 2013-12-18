@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_card"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/rounded_corner">
+
+        <ImageView
+            android:id="@+id/video_thumbnail"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:layout_alignParentTop="true" />
+
+        <LinearLayout
+            android:id="@+id/video_title_line"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_below="@id/video_thumbnail">
+
+            <TextView
+                android:id="@+id/video_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/primary_text_light"
+                android:text="Video Title text"
+                android:layout_weight=".9"
+                android:singleLine="true"
+                android:layout_gravity="center_vertical"
+                android:ellipsize="end"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-light" />
+
+            <ImageView
+                android:id="@+id/video_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_share"
+                android:alpha=".6" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/video_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:textColor="@android:color/secondary_text_light"
+            android:layout_below="@id/video_title_line"
+            android:fontFamily="sans-serif-light"
+            android:text="this is a sample description of the video item" />
+
+    </RelativeLayout>
+
+</FrameLayout>
