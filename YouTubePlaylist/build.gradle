@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.+'
+        classpath 'com.android.tools.build:gradle:1.2.3'
     }
 }
 apply plugin: 'android'
@@ -13,16 +13,15 @@ repositories {
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.0.0'
+    compileSdkVersion 21
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         minSdkVersion 7
-        targetSdkVersion 19
+        targetSdkVersion 21
     }
     buildTypes {
         release {
-            runProguard false
             proguardFile getDefaultProguardFile('proguard-android.txt')
         }
     }
@@ -34,9 +33,9 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:19.0.0'
-    compile 'com.android.support:appcompat-v7:+'
-    compile 'com.squareup.picasso:picasso:2.1.+'
-    compile 'com.google.code.gson:gson:2.2.+'
-    compile 'com.github.kevinsawicki:etag-cache:0.6'
+    compile 'com.android.support:support-v4:21.0.0'
+    compile 'com.android.support:appcompat-v7:21.0.0'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.google.code.gson:gson:2.3.1'
 }

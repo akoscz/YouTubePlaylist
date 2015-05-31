@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.github.kevinsawicki.etag.EtagCache;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -43,7 +42,6 @@ public class YouTubeFragment extends Fragment {
     private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0";
     private static final String PLAYLIST_KEY = "PLAYLIST_KEY";
     private ListView mListView;
-    private EtagCache mEtagCache;
     private Playlist mPlaylist;
     private PlaylistAdapter mAdapter;
 
@@ -73,12 +71,9 @@ public class YouTubeFragment extends Fragment {
         // start loading the first page of our playlist
         new GetYouTubePlaylistAsyncTask() {
             @Override
-            public EtagCache getEtagCache() {
-                return mEtagCache;
-            }
-
-            @Override
             public void onPostExecute(JSONObject result) {
+                if (result == null) return;
+
                 handlePlaylistResult(result);
             }
         }.execute(YOUTUBE_PLAYLIST, null);
@@ -90,14 +85,6 @@ public class YouTubeFragment extends Fragment {
         super.onSaveInstanceState(outState);
         String json = new Gson().toJson(mPlaylist);
         outState.putString(PLAYLIST_KEY, json);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        // initialize our etag cache for this playlist
-        File cacheFile = new File(activity.getFilesDir(), YOUTUBE_PLAYLIST);
-        mEtagCache = EtagCache.create(cacheFile, EtagCache.FIVE_MB);
     }
 
     private void initListAdapter(Playlist playlist) {
@@ -213,11 +200,6 @@ public class YouTubeFragment extends Fragment {
             final String nextPageToken = mPlaylist.getNextPageToken(position);
             if (!isEmpty(nextPageToken) && position == getCount() - 1) {
                 new GetYouTubePlaylistAsyncTask() {
-                    @Override
-                    public EtagCache getEtagCache() {
-                        return mEtagCache;
-                    }
-
                     @Override
                     public void onPostExecute(JSONObject result) {
                         handlePlaylistResult(result);

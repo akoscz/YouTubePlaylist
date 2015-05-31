@@ -4,8 +4,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.github.kevinsawicki.etag.CacheRequest;
-import com.github.kevinsawicki.etag.EtagCache;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +36,10 @@ public abstract class GetYouTubePlaylistAsyncTask extends AsyncTask<String, Void
     private static final String YOUTUBE_PLAYLISTITEMS_URL = "https://www.googleapis.com/youtube/v3/playlistItems";
     private static final String YOUTUBE_PLAYLIST_PART = "snippet";
     private static final String YOUTUBE_PLAYLIST_FIELDS = "etag,pageInfo,nextPageToken,items(id,snippet(title,description,position,thumbnails(medium,high),resourceId/videoId))";
+
+    private static OkHttpClient client = new OkHttpClient();
+
+    protected Uri.Builder mUriBuilder;
 
     public GetYouTubePlaylistAsyncTask() {
         mUriBuilder = Uri.parse(YOUTUBE_PLAYLISTITEMS_URL).buildUpon();
@@ -79,34 +84,21 @@ public abstract class GetYouTubePlaylistAsyncTask extends AsyncTask<String, Void
         return jsonObject;
     }
 
-    protected Uri.Builder mUriBuilder;
-
-    public abstract EtagCache getEtagCache();
-
     public String doGetUrl(String url) {
         Log.d(TAG, url);
 
-        CacheRequest request = CacheRequest.get(url, getEtagCache());
-//        Log.d(TAG, "Response was " + request.body());
+        Response response = null;
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
 
-        StringBuilder builder = new StringBuilder();
-        InputStream is = request.stream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        String line;
         try {
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
+            response = client.newCall(request).execute();
+            return  response.body().string();
+
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-
-        if (request.cached()) {
-            Log.d(TAG, "Cache hit");
-        } else {
-            Log.d(TAG, "Cache miss");
-        }
-
-        return builder.toString();
     }
 }
