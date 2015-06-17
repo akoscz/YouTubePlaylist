@@ -52,7 +52,7 @@ public class YouTubeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Picasso.with(getActivity()).setDebugging(true);
+        Picasso.with(getActivity()).setIndicatorsEnabled(BuildConfig.DEBUG);
 
         View rootView = inflater.inflate(R.layout.youtube_fragment, container, false);
 
