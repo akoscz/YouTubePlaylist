@@ -65,12 +65,27 @@ public abstract class GetYouTubePlaylistAsyncTask extends AsyncTask<String, Void
                 .appendQueryParameter("fields", YOUTUBE_PLAYLIST_FIELDS)
                 .appendQueryParameter("key", ApiKey.YOUTUBE_API_KEY);
 
-        final String result = doGetUrl(mUriBuilder.build().toString());
+        final String url = mUriBuilder.build().toString();
+        Log.d(TAG, url);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        Response response;
+        String result;
+        try {
+            response = client.newCall(request).execute();
+            result = response.body().string();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
         if (result == null) {
             Log.e(TAG, "Failed to get playlist");
             return null;
-        } else {
-            //Log.i(TAG, result);
         }
 
         JSONObject jsonObject;
@@ -82,23 +97,5 @@ public abstract class GetYouTubePlaylistAsyncTask extends AsyncTask<String, Void
         }
 
         return jsonObject;
-    }
-
-    public String doGetUrl(String url) {
-        Log.d(TAG, url);
-
-        Response response = null;
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try {
-            response = client.newCall(request).execute();
-            return  response.body().string();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }
