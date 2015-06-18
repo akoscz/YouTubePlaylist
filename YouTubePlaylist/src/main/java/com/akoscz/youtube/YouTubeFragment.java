@@ -1,6 +1,5 @@
 package com.akoscz.youtube;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,10 +15,11 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
+import java.text.DecimalFormat;
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,6 +38,7 @@ import java.io.File;
  * YouTubeFragment which contains a list view of YouTube video cards
  */
 public class YouTubeFragment extends Fragment {
+    private static final String TAG = "YouTubeFragment";
 
     private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0";
     private static final String PLAYLIST_KEY = "PLAYLIST_KEY";
@@ -49,8 +50,7 @@ public class YouTubeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         Picasso.with(getActivity()).setIndicatorsEnabled(BuildConfig.DEBUG);
 
@@ -97,9 +97,35 @@ public class YouTubeFragment extends Fragment {
             if (mPlaylist == null) {
                 mPlaylist = new Playlist(result);
                 initListAdapter(mPlaylist);
-            } else {
-                mPlaylist.addPage(result);
             }
+
+            final Playlist.Page page = mPlaylist.addPage(result);
+
+            // fetch all the video details for the current page of Playlist Items
+            new GetYouTubeVideoAsyncTask() {
+
+                @Override
+                public void onPostExecute(JSONObject result) {
+                    if (result == null) {
+                        return;
+                    }
+
+                    try {
+                        JSONArray resultItems = result.getJSONArray("items");
+                        PlaylistItem playlistItem;
+                        for (int i = 0; i < page.items.size(); i++) {
+                            playlistItem = page.items.get(i);
+                            playlistItem.video = new Video(resultItems.getJSONObject(i));
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    // make sure the UI gets updated
+                    mAdapter.notifyDataSetChanged();
+                }
+            }.execute(page);
 
             if (!mAdapter.setIsLoading(false)) {
                 mAdapter.notifyDataSetChanged();
@@ -110,6 +136,7 @@ public class YouTubeFragment extends Fragment {
     }
 
     protected class PlaylistAdapter extends BaseAdapter {
+        private final DecimalFormat formatter = new DecimalFormat("#,###,###");
         private final LayoutInflater mInflater;
         private Playlist mPlaylist;
         private boolean mIsLoading = false;
@@ -163,6 +190,11 @@ public class YouTubeFragment extends Fragment {
                 viewHolder.description = (TextView) convertView.findViewById(R.id.video_description);
                 viewHolder.thumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
                 viewHolder.share = (ImageView) convertView.findViewById(R.id.video_share);
+                viewHolder.shareText = (TextView) convertView.findViewById(R.id.video_share_text);
+                viewHolder.duration = (TextView) convertView.findViewById(R.id.video_dutation_text);
+                viewHolder.viewCount= (TextView) convertView.findViewById(R.id.video_view_count);
+                viewHolder.likeCount = (TextView) convertView.findViewById(R.id.video_like_count);
+                viewHolder.dislikeCount = (TextView) convertView.findViewById(R.id.video_dislike_count);
                 convertView.setTag(viewHolder);
             }
 
@@ -172,10 +204,12 @@ public class YouTubeFragment extends Fragment {
             viewHolder.title.setText(item.title);
             viewHolder.description.setText(item.description);
 
+            // load the video thumbnail image
             Picasso.with(getActivity())
                     .load(item.thumbnailUrl)
                     .into(viewHolder.thumbnail);
 
+            // set the click listener to play the video
             viewHolder.thumbnail.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -184,7 +218,8 @@ public class YouTubeFragment extends Fragment {
                 }
             });
 
-            viewHolder.share.setOnClickListener(new View.OnClickListener() {
+            // create and set the click listener for both the share icon and share text
+            View.OnClickListener shareClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent sendIntent = new Intent();
@@ -194,7 +229,18 @@ public class YouTubeFragment extends Fragment {
                     sendIntent.setType("text/plain");
                     startActivity(sendIntent);
                 }
-            });
+            };
+            viewHolder.share.setOnClickListener(shareClickListener);
+            viewHolder.shareText.setOnClickListener(shareClickListener);
+
+            if (item.video != null) {
+                // set the video duration text
+                viewHolder.duration.setText(item.video.duration);
+                // set the video statistics
+                viewHolder.viewCount.setText(formatter.format(item.video.viewCount));
+                viewHolder.likeCount.setText(formatter.format(item.video.likeCount));
+                viewHolder.dislikeCount.setText(formatter.format(item.video.dislikeCount));
+            }
 
             // get the next playlist page if we're at the end of the current page and we have another page to get
             final String nextPageToken = mPlaylist.getNextPageToken(position);
@@ -224,6 +270,11 @@ public class YouTubeFragment extends Fragment {
             TextView title;
             TextView description;
             ImageView share;
+            TextView shareText;
+            TextView duration;
+            TextView viewCount;
+            TextView likeCount;
+            TextView dislikeCount;
         }
     }
 }

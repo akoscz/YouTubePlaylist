@@ -25,7 +25,7 @@ public class Playlist {
     public final int totalResults;
     public final int resultsPerPage;
 
-    public List<Page> pages;
+    public List<Playlist.Page> pages;
 
     public Playlist(JSONObject jsonPlaylist) throws JSONException {
         pages = new ArrayList<Page>();
@@ -33,8 +33,6 @@ public class Playlist {
         JSONObject pageInfo = jsonPlaylist.getJSONObject("pageInfo");
         totalResults = pageInfo.getInt("totalResults");
         resultsPerPage = pageInfo.getInt("resultsPerPage");
-
-        addPage(jsonPlaylist);
     }
 
     public int getCount() {
@@ -46,11 +44,15 @@ public class Playlist {
         return count;
     }
 
-    public void addPage(JSONObject jsonPlaylist) throws JSONException {
-        pages.add(new Page(
+    public Page addPage(JSONObject jsonPlaylist) throws JSONException {
+        final Page page = new Page(
                 jsonPlaylist.getJSONArray("items"),
                 jsonPlaylist.getString("etag"),
-                jsonPlaylist.optString("nextPageToken", null)));
+                jsonPlaylist.optString("nextPageToken", null));
+
+        pages.add(page);
+
+        return page;
     }
 
     public PlaylistItem getItem(int position) {
@@ -78,6 +80,7 @@ public class Playlist {
         public final String nextPageToken;
         public final List<PlaylistItem> items;
         public final String eTag;
+        public boolean haveVideoDetails;
 
         Page(JSONArray jsonItems, String etag, String nextPageToken) throws JSONException {
             eTag = etag;
@@ -88,6 +91,17 @@ public class Playlist {
                 JSONObject item = jsonItems.getJSONObject(i);
                 items.add(new PlaylistItem(item));
             }
+        }
+
+        public String getVideoIds() {
+            StringBuffer buffer = new StringBuffer();
+            for (PlaylistItem item : items) {
+                buffer.append(item.videoId);
+                buffer.append(',');
+            }
+            buffer.deleteCharAt(buffer.lastIndexOf(","));
+
+            return buffer.toString();
         }
     }
 }

@@ -23,6 +23,7 @@ public class PlaylistItem {
     public final String thumbnailUrl;
     public final String videoId;
     public final int position;
+    public Video video;
 
     public PlaylistItem(JSONObject jsonItem) throws JSONException {
         id = jsonItem.getString("id");
