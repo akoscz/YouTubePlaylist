@@ -75,7 +75,7 @@ public abstract class GetYouTubeVideoAsyncTask extends AsyncTask<Playlist.Page, 
         }
 
         if (result == null) {
-            Log.e(TAG, "Failed to get playlist");
+            Log.e(TAG, "Failed to get Video details");
             return null;
         }
 
