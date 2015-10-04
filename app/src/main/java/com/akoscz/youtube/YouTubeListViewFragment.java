@@ -54,7 +54,7 @@ public class YouTubeListViewFragment extends Fragment {
 
         Picasso.with(getActivity()).setIndicatorsEnabled(BuildConfig.DEBUG);
 
-        View rootView = inflater.inflate(R.layout.youtube_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.youtube_list_view_fragment, container, false);
 
         mListView = (ListView) rootView.findViewById(R.id.youtube_listview);
 
