@@ -43,7 +43,7 @@ public class YouTubeActivity extends ActionBarActivity {
 
         } else if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new YouTubeFragment())
+                    .add(R.id.container, new YouTubeListViewFragment())
                     .commit();
         }
     }

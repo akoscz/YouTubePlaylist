@@ -35,10 +35,10 @@ import java.text.DecimalFormat;
  * limitations under the License.
  * <p/>
  * <p/>
- * YouTubeFragment which contains a list view of YouTube video cards
+ * YouTubeListViewFragment which contains a list view of YouTube video cards
  */
-public class YouTubeFragment extends Fragment {
-    private static final String TAG = "YouTubeFragment";
+public class YouTubeListViewFragment extends Fragment {
+    private static final String TAG = "YouTubeListViewFragment";
 
     private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0";
     private static final String PLAYLIST_KEY = "PLAYLIST_KEY";
@@ -46,7 +46,7 @@ public class YouTubeFragment extends Fragment {
     private Playlist mPlaylist;
     private PlaylistAdapter mAdapter;
 
-    public YouTubeFragment() {
+    public YouTubeListViewFragment() {
     }
 
     @Override
