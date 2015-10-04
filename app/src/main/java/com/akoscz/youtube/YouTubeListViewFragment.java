@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.akoscz.youtube.model.Playlist;
+import com.akoscz.youtube.model.PlaylistItem;
+import com.akoscz.youtube.model.Video;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
