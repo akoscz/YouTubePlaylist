@@ -43,13 +43,40 @@ import java.text.DecimalFormat;
 public class YouTubeListViewFragment extends Fragment {
     private static final String TAG = "YouTubeListViewFragment";
 
-    private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0";
-    private static final String PLAYLIST_KEY = "PLAYLIST_KEY";
+    // the fragment initialization parameter
+    private static final String ARG_YOUTUBE_PLAYLIST_ID = "YOUTUBE_PLAYLIST_ID";
+    // key used in the saved instance bundle to persist the playlist
+    private static final String KEY_SAVED_INSTANCE_PLAYLIST = "SAVED_INSTANCE_PLAYLIST";
+
     private ListView mListView;
     private Playlist mPlaylist;
     private PlaylistAdapter mAdapter;
+    private String mPlaylistId;
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param playlistId The YouTube Playlist ID parameter string
+     * @return A new instance of fragment YouTubeListViewFragment.
+     */
+    public static YouTubeListViewFragment newInstance(String playlistId) {
+        YouTubeListViewFragment fragment = new YouTubeListViewFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_YOUTUBE_PLAYLIST_ID, playlistId);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public YouTubeListViewFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mPlaylistId = getArguments().getString(ARG_YOUTUBE_PLAYLIST_ID);
+        }
     }
 
     @Override
@@ -63,7 +90,7 @@ public class YouTubeListViewFragment extends Fragment {
 
         // restore the playlist after an orientation change
         if (savedInstanceState != null) {
-            mPlaylist = new Gson().fromJson(savedInstanceState.getString(PLAYLIST_KEY), Playlist.class);
+            mPlaylist = new Gson().fromJson(savedInstanceState.getString(KEY_SAVED_INSTANCE_PLAYLIST), Playlist.class);
         }
 
         // ensure the adapter and listview are initialized
@@ -79,15 +106,16 @@ public class YouTubeListViewFragment extends Fragment {
 
                 handlePlaylistResult(result);
             }
-        }.execute(YOUTUBE_PLAYLIST, null);
+        }.execute(mPlaylistId, null);
 
         return rootView;
     }
 
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         String json = new Gson().toJson(mPlaylist);
-        outState.putString(PLAYLIST_KEY, json);
+        outState.putString(KEY_SAVED_INSTANCE_PLAYLIST, json);
     }
 
     private void initListAdapter(Playlist playlist) {
@@ -253,7 +281,7 @@ public class YouTubeListViewFragment extends Fragment {
                     public void onPostExecute(JSONObject result) {
                         handlePlaylistResult(result);
                     }
-                }.execute(YOUTUBE_PLAYLIST, nextPageToken);
+                }.execute(mPlaylistId, nextPageToken);
 
                 setIsLoading(true);
             }

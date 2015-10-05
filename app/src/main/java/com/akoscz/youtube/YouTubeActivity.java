@@ -65,7 +65,7 @@ public class YouTubeActivity extends ActionBarActivity {
         int id = item.getItemId();
         if (id == R.id.action_listview) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new YouTubeListViewFragment())
+                    .replace(R.id.container, YouTubeListViewFragment.newInstance(YOUTUBE_PLAYLIST))
                     .commit();
             return true;
         }else if (id == R.id.action_recyclerview) {
