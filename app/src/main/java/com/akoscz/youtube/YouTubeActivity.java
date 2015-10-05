@@ -21,6 +21,7 @@ import android.view.MenuItem;
  * limitations under the License.
  */
 public class YouTubeActivity extends ActionBarActivity {
+    private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +44,10 @@ public class YouTubeActivity extends ActionBarActivity {
 
         } else if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new YouTubeListViewFragment())
+                    .add(R.id.container, YouTubeRecyclerViewFragment.newInstance(YOUTUBE_PLAYLIST))
                     .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -63,7 +63,15 @@ public class YouTubeActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_listview) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, new YouTubeListViewFragment())
+                    .commit();
+            return true;
+        }else if (id == R.id.action_recyclerview) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, YouTubeRecyclerViewFragment.newInstance(YOUTUBE_PLAYLIST))
+                    .commit();
             return true;
         }
         return super.onOptionsItemSelected(item);
