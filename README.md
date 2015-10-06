@@ -7,7 +7,7 @@ This sample app makes use of [Picasso](https://github.com/square/picasso) for do
 It also uses [OkHttp](http://square.github.io/okhttp/) for HTTP response caching to avoid the network completely for repeat [requests](app/src/main/java/com/akoscz/youtube/GetYouTubePlaylistAsyncTask.java).
 Lastly, [Gson](https://code.google.com/p/google-gson) is used to serialize the [Playlist](app/src/main/java/com/akoscz/youtube/model/Playlist.java) datamodel for persistance across orientation changes.
 
-There are two examples of how to fetch and render the list of YouTube video in a playlist.
+There are two examples of how to fetch and render a YouTube playlist.
    1. A Fragment with a simple [ListView](app/src/main/java/com/akoscz/youtube/YouTubeListViewFragment.java) where each [list item](app/src/main/res/layout/youtube_video_list_item.xml) mimicks the look of a CardView.  
    2. A Fragment with a [RecyclerView](app/src/main/java/com/akoscz/youtube/YouTubeRecyclerViewFragment.java) where each [list item](app/src/main/res/layout/youtube_video_card.xml) is a real  [CardView](https://developer.android.com/reference/android/support/v7/widget/CardView.html)
 
