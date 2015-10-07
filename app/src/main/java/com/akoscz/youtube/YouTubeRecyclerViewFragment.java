@@ -18,7 +18,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,24 +137,9 @@ public class YouTubeRecyclerViewFragment extends Fragment {
                         handlePlaylistResult(result);
                     }
                 }.execute(mPlaylistId, nextPageToken);
-
-                setNextPageLoading(true);
             }
         });
         mRecyclerView.setAdapter(mAdapter);
-    }
-
-    /**
-     * @param isLoading
-     * @return True if the adapter was notified that data set has changed, false otherwise
-     */
-    public boolean setNextPageLoading(boolean isLoading) {
-        if (mIsLoading != isLoading) {
-            mIsLoading = isLoading;
-            mAdapter.notifyDataSetChanged();
-            return true;
-        }
-        return false;
     }
 
     private void handlePlaylistResult(JSONObject result) {
@@ -166,6 +150,8 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             }
 
             final Playlist.Page page = mPlaylist.addPage(result);
+            final int itemsPerPage = page.items.size();
+            final int pageNumberBase = page.pageNumber * itemsPerPage;
 
             // fetch all the video details for the current page of Playlist Items
             new GetYouTubeVideoAsyncTask() {
@@ -179,23 +165,20 @@ public class YouTubeRecyclerViewFragment extends Fragment {
                     try {
                         JSONArray resultItems = result.getJSONArray("items");
                         PlaylistItem playlistItem;
-                        for (int i = 0; i < page.items.size(); i++) {
+                        for (int i = 0; i < itemsPerPage; i++) {
                             playlistItem = page.items.get(i);
                             playlistItem.video = new Video(resultItems.getJSONObject(i));
+                            // make sure the UI gets updated for the item
+                            mAdapter.notifyItemChanged(pageNumberBase + i);
                         }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                    // make sure the UI gets updated
-                    mAdapter.notifyDataSetChanged();
                 }
             }.execute(page);
 
-            if (!setNextPageLoading(false)) {
-                mAdapter.notifyDataSetChanged();
-            }
+            mAdapter.notifyItemRangeInserted(pageNumberBase, pageNumberBase + itemsPerPage);
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -46,6 +46,7 @@ public class Playlist {
 
     public Page addPage(JSONObject jsonPlaylist) throws JSONException {
         final Page page = new Page(
+                pages.size(),
                 jsonPlaylist.getJSONArray("items"),
                 jsonPlaylist.getString("etag"),
                 jsonPlaylist.optString("nextPageToken", null));
@@ -80,9 +81,10 @@ public class Playlist {
         public final String nextPageToken;
         public final List<PlaylistItem> items;
         public final String eTag;
-        public boolean haveVideoDetails;
+        public final int pageNumber;
 
-        Page(JSONArray jsonItems, String etag, String nextPageToken) throws JSONException {
+        Page(int number, JSONArray jsonItems, String etag, String nextPageToken) throws JSONException {
+            pageNumber = number;
             eTag = etag;
             items = new ArrayList<PlaylistItem>(jsonItems.length());
             this.nextPageToken = nextPageToken;
