@@ -1,9 +1,12 @@
 package com.akoscz.youtube;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +47,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     private String mPlaylistId;
     private RecyclerView mRecyclerView;
     private Playlist mPlaylist;
-    private LinearLayoutManager mLayoutManager;
+    private RecyclerView.LayoutManager mLayoutManager;
     private PlaylistCardAdapter mAdapter;
     private boolean mIsLoading;
 
@@ -84,9 +87,10 @@ public class YouTubeRecyclerViewFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // set the Picasso debug indicator only for debug builds
         Picasso.with(getActivity()).setIndicatorsEnabled(BuildConfig.DEBUG);
 
+        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.youtube_recycler_view_fragment, container, false);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.youtube_recycler_view);
@@ -94,8 +98,14 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
 
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(getActivity());
+        Resources resources = getResources();
+        if (resources.getBoolean(R.bool.isTablet)) {
+            // use a staggered grid layout if we're on a large screen device
+            mLayoutManager = new StaggeredGridLayoutManager(resources.getInteger(R.integer.columns), StaggeredGridLayoutManager.VERTICAL);
+        } else {
+            // use a linear layout on phone devices
+            mLayoutManager = new LinearLayoutManager(getActivity());
+        }
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -144,6 +154,10 @@ public class YouTubeRecyclerViewFragment extends Fragment {
 
     private void handlePlaylistResult(JSONObject result) {
         try {
+            if (result == null) {
+                return;
+            }
+
             if (mPlaylist == null) {
                 mPlaylist = new Playlist(result);
                 initAdapter(mPlaylist);

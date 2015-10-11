@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/akoscz/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp/okhttp/2.4.0/40340c0748190fe897baf7bffbc1b282734294e5/okhttp-2.4.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="40340c0748190fe897baf7bffbc1b282734294e5">
+        <dex dex="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/pre-dexed/defaultFlavor/debug/okhttp-2.4.0-fe22097e29c4a5b441fa38b1a5057d061cac75c8.jar" />
+    </item>
+    <item
+        jar="/Users/akoscz/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.3.1/ecb6e1f8e4b0e84c4b886c2f14a1500caf309757/gson-2.3.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="ecb6e1f8e4b0e84c4b886c2f14a1500caf309757">
+        <dex dex="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/pre-dexed/defaultFlavor/debug/gson-2.3.1-638602643cb3811117eda9e9b5a3e08ed9d42a95.jar" />
+    </item>
+    <item
+        jar="/Users/akoscz/.gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.4.0/5b72bf48563ea8410e650de14aa33ff69a3e8c35/okio-1.4.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="5b72bf48563ea8410e650de14aa33ff69a3e8c35">
+        <dex dex="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/pre-dexed/defaultFlavor/debug/okio-1.4.0-54d49c7ade94af0739301b18512d80b820f41d08.jar" />
+    </item>
+    <item
+        jar="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/libs/internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/pre-dexed/defaultFlavor/debug/internal_impl-21.0.3-49a626ceed6eda3c8ede2c1722f51dc9c8ab5224.jar" />
+    </item>
+    <item
+        jar="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/exploded-aar/com.android.support/cardview-v7/21.0.3/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="00b0b7233e1ec64acebfac40d4983d32d4712426">
+        <dex dex="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/pre-dexed/defaultFlavor/debug/classes-ec8b3a90442ff827c7399841861c24f14e394c49.jar" />
+    </item>
+    <item
+        jar="/Users/akoscz/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="7446d06ec8d4f7ffcc53f1da37c95f200dcb9387">
+        <dex dex="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/pre-dexed/defaultFlavor/debug/picasso-2.5.2-b55176243648d3645453f721d7f0a6f60cf20c89.jar" />
+    </item>
+    <item
+        jar="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/21.0.3/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4b8945fc23a7461c6fdde15753456d64b0a9358b">
+        <dex dex="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/pre-dexed/defaultFlavor/debug/classes-23a3835c39a2304b2961a0da1909c6ad340ba0f7.jar" />
+    </item>
+    <item
+        jar="/Users/akoscz/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/pre-dexed/defaultFlavor/debug/support-annotations-21.0.3-73cfe0126e907d942cf52e5f4e2aa5255272a707.jar" />
+    </item>
+    <item
+        jar="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/pre-dexed/defaultFlavor/debug/classes-fdf05a97badb0e515d7ac362875778b23d408c16.jar" />
+    </item>
+    <item
+        jar="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/Users/akoscz/workspace/YouTubePlaylist/app/build/intermediates/pre-dexed/defaultFlavor/debug/classes-582e2940a3c82ea0de8b69e0e1845a812aae265b.jar" />
+    </item>
+
+</items>
