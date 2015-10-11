@@ -35,12 +35,8 @@ __Phone__: Single Column Portrait and Landscape
 
 ![](screenshot_phone.png)
 
-__Tablet__: 7" and 9" (sw600)
-
-2 Columns Portrait
+__Tablet__: 7" and 9" (sw600) 2 Columns Portrait, 3 Columns Landscape
 ![](screenshot_7_9_tablet-port.png)
-
-3 Columns Landscape
 ![](screenshot_7_9_tablet-land.png)
 
 __Tablet__: 10" (sw800) 3 Columns Portrait and Landscape
