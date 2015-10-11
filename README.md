@@ -33,16 +33,17 @@ There are two examples of how to fetch and render a YouTube playlist.
 ## Screenshots
 __Phone__: Single Column Portrait and Landscape
 
-![](screenshot_phone.png)
+![](screenshots/phone-port.png)
 
 __Tablet__: 7" and 9" (sw600) 2 Columns Portrait, 3 Columns Landscape
-![](screenshot_7_9_tablet-port.png)
-![](screenshot_7_9_tablet-land.png)
+
+![](screenshots/tablet_7_9-port.png)
+![](screenshots/tablet_7_9-land.png)
 
 __Tablet__: 10" (sw800) 3 Columns Portrait and Landscape
 
-![](screenshot_10_tablet-port.png)
-![](screenshot_10_tablet-land.png)
+![](screenshots/tablet_10-port.png)
+![](screenshots/tablet_10-land.png)
 
 ## License
 
