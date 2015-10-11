@@ -8,7 +8,7 @@ It also uses [OkHttp](http://square.github.io/okhttp/) for HTTP response caching
 Lastly, [Gson](https://code.google.com/p/google-gson) is used to serialize the [Playlist](app/src/main/java/com/akoscz/youtube/model/Playlist.java) datamodel for persistance across orientation changes.
 
 There are two examples of how to fetch and render a YouTube playlist.
-   1. A Fragment with a simple [ListView](app/src/main/java/com/akoscz/youtube/YouTubeListViewFragment.java) where each [list item](app/src/main/res/layout/youtube_video_list_item.xml) mimicks the look of a CardView.  
+   1. A Fragment with a simple [ListView](app/src/main/java/com/akoscz/youtube/YouTubeListViewFragment.java) where each [list item](app/src/main/res/layout/youtube_video_list_item.xml) mimicks the look of a CardView. <-- _deprecated._ __Use only for reference.__
    2. A Fragment with a [RecyclerView](app/src/main/java/com/akoscz/youtube/YouTubeRecyclerViewFragment.java) where each [list item](app/src/main/res/layout/youtube_video_card.xml) is a real  [CardView](https://developer.android.com/reference/android/support/v7/widget/CardView.html)
 
 ## Setup
@@ -31,16 +31,19 @@ There are two examples of how to fetch and render a YouTube playlist.
   * [com.google.code.gson:gson:2.3.1](https://code.google.com/p/google-gson)
 
 ## Screenshots
-_Phone_: Single Column Portrait and Landscape
+__Phone__: Single Column Portrait and Landscape
 
 ![](screenshot_phone.png)
 
-_Tablet_: 7" & 9" (sw600) 2 Columns Portrait, 3 Columns Landscape
+__Tablet__: 7" and 9" (sw600)
 
+2 Columns Portrait
 ![](screenshot_7_9_tablet-port.png)
+
+3 Columns Landscape
 ![](screenshot_7_9_tablet-land.png)
 
-_Tablet_: 10" (sw800) 3 Columns Portrait and Landscape
+__Tablet__: 10" (sw800) 3 Columns Portrait and Landscape
 
 ![](screenshot_7_9_tablet-port.png)
 ![](screenshot_7_9_tablet-land.png)
