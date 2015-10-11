@@ -11,8 +11,6 @@ There are two examples of how to fetch and render a YouTube playlist.
    1. A Fragment with a simple [ListView](app/src/main/java/com/akoscz/youtube/YouTubeListViewFragment.java) where each [list item](app/src/main/res/layout/youtube_video_list_item.xml) mimicks the look of a CardView.  
    2. A Fragment with a [RecyclerView](app/src/main/java/com/akoscz/youtube/YouTubeRecyclerViewFragment.java) where each [list item](app/src/main/res/layout/youtube_video_card.xml) is a real  [CardView](https://developer.android.com/reference/android/support/v7/widget/CardView.html)
 
-![](screenshot.png)
-
 ## Setup
   
   * Register your application with the [Google Developer Console](https://developers.google.com/youtube/registering_an_application).  You MUST register your application as a [Web Application](https://developers.google.com/youtube/registering_an_application#web-applications).
@@ -31,6 +29,21 @@ There are two examples of how to fetch and render a YouTube playlist.
   * [com.squareup.picasso:picasso:2.5.2](https://github.com/square/picasso)
   * [com.squareup.okhttp:okhttp:2.4.0](http://square.github.io/okhttp)
   * [com.google.code.gson:gson:2.3.1](https://code.google.com/p/google-gson)
+
+## Screenshots
+_Phone_: Single Column Portrait and Landscape
+
+![](screenshot_phone.png)
+
+_Tablet_: 7" & 9" (sw600) 2 Columns Portrait, 3 Columns Landscape
+
+![](screenshot_7_9_tablet-port.png)
+![](screenshot_7_9_tablet-land.png)
+
+_Tablet_: 10" (sw800) 3 Columns Portrait and Landscape
+
+![](screenshot_7_9_tablet-port.png)
+![](screenshot_7_9_tablet-land.png)
 
 ## License
 
