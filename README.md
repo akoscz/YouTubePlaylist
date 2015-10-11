@@ -41,8 +41,8 @@ __Tablet__: 7" and 9" (sw600) 2 Columns Portrait, 3 Columns Landscape
 
 __Tablet__: 10" (sw800) 3 Columns Portrait and Landscape
 
-![](screenshot_7_9_tablet-port.png)
-![](screenshot_7_9_tablet-land.png)
+![](screenshot_10_tablet-port.png)
+![](screenshot_10_tablet-land.png)
 
 ## License
 
