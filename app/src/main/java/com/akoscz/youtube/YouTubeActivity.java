@@ -7,6 +7,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.youtube.YouTube;
+
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +27,9 @@ import android.view.MenuItem;
  */
 public class YouTubeActivity extends ActionBarActivity {
     private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0";
+    private YouTube mYoutubeDataApi;
+    private final GsonFactory mJsonFactory = new GsonFactory();
+    private final HttpTransport mTransport = AndroidHttp.newCompatibleTransport();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +51,12 @@ public class YouTubeActivity extends ActionBarActivity {
             dialog.show();
 
         } else if (savedInstanceState == null) {
+            mYoutubeDataApi = new YouTube.Builder(mTransport, mJsonFactory, null)
+                    .setApplicationName(getResources().getString(R.string.app_name))
+                    .build();
+
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, YouTubeRecyclerViewFragment.newInstance(YOUTUBE_PLAYLIST))
+                    .add(R.id.container, YouTubeRecyclerViewFragment.newInstance(mYoutubeDataApi, YOUTUBE_PLAYLIST))
                     .commit();
         }
     }
@@ -70,7 +82,7 @@ public class YouTubeActivity extends ActionBarActivity {
             return true;
         }else if (id == R.id.action_recyclerview) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, YouTubeRecyclerViewFragment.newInstance(YOUTUBE_PLAYLIST))
+                    .replace(R.id.container, YouTubeRecyclerViewFragment.newInstance(mYoutubeDataApi, YOUTUBE_PLAYLIST))
                     .commit();
             return true;
         }
