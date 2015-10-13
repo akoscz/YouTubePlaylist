@@ -99,6 +99,7 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
         // load the video thumbnail image
         Picasso.with(holder.mContext)
                 .load(videoSnippet.getThumbnails().getHigh().getUrl())
+                .placeholder(R.drawable.video_placeholder)
                 .into(holder.mThumbnailImage);
 
         // set the click listener to play the video
