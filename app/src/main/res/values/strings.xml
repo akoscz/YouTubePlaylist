@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">YouTubePlaylist</string>
-    <string name="action_list_view">ListView</string>
     <string name="action_recycler_view">RecyclerView</string>
 
 </resources>

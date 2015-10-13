@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.akoscz.youtube.model_v3.Playlist;
+import com.akoscz.youtube.model.Playlist;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Video;
 import com.google.gson.Gson;
@@ -41,13 +41,13 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     private static final String ARG_YOUTUBE_PLAYLIST_ID = "YOUTUBE_PLAYLIST_ID";
     // key used in the saved instance bundle to persist the playlist
     private static final String KEY_SAVED_INSTANCE_PLAYLIST = "SAVED_INSTANCE_PLAYLIST";
-    private static YouTube sYouTubeDataApi;
 
     private String mPlaylistId;
     private RecyclerView mRecyclerView;
     private Playlist mPlaylist;
     private RecyclerView.LayoutManager mLayoutManager;
     private PlaylistCardAdapter mAdapter;
+    private YouTube mYouTubeDataApi;
 
     /**
      * Use this factory method to create a new instance of
@@ -59,16 +59,20 @@ public class YouTubeRecyclerViewFragment extends Fragment {
      * @return A new instance of fragment YouTubeRecyclerViewFragment.
      */
     public static YouTubeRecyclerViewFragment newInstance(YouTube youTubeDataApi, String playlistId) {
-        sYouTubeDataApi = youTubeDataApi;
         YouTubeRecyclerViewFragment fragment = new YouTubeRecyclerViewFragment();
         Bundle args = new Bundle();
         args.putString(ARG_YOUTUBE_PLAYLIST_ID, playlistId);
         fragment.setArguments(args);
+        fragment.setYouTubeDataApi(youTubeDataApi);
         return fragment;
     }
 
     public YouTubeRecyclerViewFragment() {
         // Required empty public constructor
+    }
+
+    public void setYouTubeDataApi(YouTube api) {
+        mYouTubeDataApi = api;
     }
 
     @Override
@@ -131,12 +135,12 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             // populate an empty UI
             initAdapter(mPlaylist);
             // and start fetching the playlist contents
-            new GetPlaylistAsyncTask() {
+            new GetPlaylistAsyncTask(mYouTubeDataApi) {
                 @Override
                 public void onPostExecute(Pair<String, List<Video>> result) {
                     handleGetPlaylistResult(mPlaylist, result);
                 }
-            }.execute(sYouTubeDataApi, mPlaylist.playlistId, mPlaylist.getNextPageToken());
+            }.execute(mPlaylist.playlistId, mPlaylist.getNextPageToken());
         }
     }
 
@@ -145,12 +149,12 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         mAdapter = new PlaylistCardAdapter(mPlaylist, new LastItemReachedListener() {
             @Override
             public void onLastItem(int position, String nextPageToken) {
-                new GetPlaylistAsyncTask() {
+                new GetPlaylistAsyncTask(mYouTubeDataApi) {
                     @Override
                     public void onPostExecute(Pair<String, List<Video>> result) {
                         handleGetPlaylistResult(playlist, result);
                     }
-                }.execute(sYouTubeDataApi, playlist.playlistId, playlist.getNextPageToken());
+                }.execute(playlist.playlistId, playlist.getNextPageToken());
             }
         });
         mRecyclerView.setAdapter(mAdapter);

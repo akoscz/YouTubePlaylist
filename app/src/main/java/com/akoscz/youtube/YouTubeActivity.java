@@ -75,12 +75,7 @@ public class YouTubeActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_listview) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, YouTubeListViewFragment.newInstance(YOUTUBE_PLAYLIST))
-                    .commit();
-            return true;
-        }else if (id == R.id.action_recyclerview) {
+        if (id == R.id.action_recyclerview) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, YouTubeRecyclerViewFragment.newInstance(mYoutubeDataApi, YOUTUBE_PLAYLIST))
                     .commit();

@@ -3,11 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.akoscz.youtube.YouTubeActivity" >
 
-    <item android:id="@+id/action_listview"
-        android:title="@string/action_list_view"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
-
     <item android:id="@+id/action_recyclerview"
         android:title="@string/action_recycler_view"
         android:orderInCategory="101"
