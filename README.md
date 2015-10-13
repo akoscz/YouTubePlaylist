@@ -3,7 +3,7 @@ YouTubePlaylist
 
 A sample Android application which demonstrates the use of the [YouTube Data API v3](https://developers.google.com/youtube/v3/).
 
-This sample app makes use of [YouTube Data API v3](https://developers.google.com/resources/api-libraries/documentation/youtube/v3/java/latest/) to fetch a YouTube [Playlist](https://developers.google.com/resources/api-libraries/documentation/youtube/v3/java/latest/com/google/api/services/youtube/model/Playlist.html) and extract the list of [Video](https://developers.google.com/resources/api-libraries/documentation/youtube/v3/java/latest/com/google/api/services/youtube/model/Video.html)'s it contains.  It then renders the list of video's using a [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) of [CardView](https://developer.android.com/reference/android/support/v7/widget/CardView.html)'s in the [YouTubeRecyclerViewFragment](app/src/main/java/com/akoscz/youtube/YouTubeRecyclerViewFragment.java).  The data binding of video details to CardView is handled by the [PlaylistCardAdapter](app/src/main/java/com/akoscz/youtube/PlaylistCardAdapter.java).
+This sample app makes use of the [YouTube Data API v3 classes] (https://developers.google.com/resources/api-libraries/documentation/youtube/v3/java/latest/) to fetch a YouTube [Playlist](https://developers.google.com/resources/api-libraries/documentation/youtube/v3/java/latest/com/google/api/services/youtube/model/Playlist.html) using the [GetPlaylistAsyncTask](app/src/main/java/com/akoscz/youtube/GetPlaylistAsyncTask.java) and which then extracts the list of [Video](https://developers.google.com/resources/api-libraries/documentation/youtube/v3/java/latest/com/google/api/services/youtube/model/Video.html)'s the playlist contains.  The list of video's are then presented using a [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) of [CardView](https://developer.android.com/reference/android/support/v7/widget/CardView.html)'s in the [YouTubeRecyclerViewFragment](app/src/main/java/com/akoscz/youtube/YouTubeRecyclerViewFragment.java).  The data binding of video details to CardView is handled by the [PlaylistCardAdapter](app/src/main/java/com/akoscz/youtube/PlaylistCardAdapter.java).
 
 [Picasso](https://github.com/square/picasso) is used for downloading and caching the video thumbnail images.
 And lastly [Gson](https://code.google.com/p/google-gson) is used to serialize the [Playlist](app/src/main/java/com/akoscz/youtube/model/Playlist.java) datamodel for persistance across orientation changes.
@@ -25,10 +25,10 @@ And lastly [Gson](https://code.google.com/p/google-gson) is used to serialize th
   * [com.android.support:appcompat-v7:21.0.3](https://developer.android.com/tools/support-library/features.html#v7-appcompat)
   * [com.squareup.picasso:picasso:2.5.2](https://github.com/square/picasso)
   * [com.google.code.gson:gson:2.3.1](https://code.google.com/p/google-gson)
-  * com.google.apis:google-api-services-youtube:v3-rev149-1.20.0
-  * com.google.http-client:google-http-client-android:1.20.0
-  * com.google.api-client:google-api-client-android:1.20.0
-  * com.google.api-client:google-api-client-gson:1.20.0
+  * [com.google.apis:google-api-services-youtube:v3-rev149-1.20.0](https://developers.google.com/api-client-library/java/apis/youtube/v3)
+  * [com.google.http-client:google-http-client-android:1.20.0](https://github.com/google/google-http-java-client)
+  * [com.google.api-client:google-api-client-android:1.20.0](https://github.com/google/google-api-java-client)
+  * [com.google.api-client:google-api-client-gson:1.20.0](https://github.com/google/google-api-java-client)
 
 ## Screenshots
 __Phone__: Single Column Portrait and Landscape
