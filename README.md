@@ -10,12 +10,12 @@ And lastly [Gson](https://code.google.com/p/google-gson) is used to serialize th
 
 ## Setup
   
-  * Register your application with the [Google Developer Console](https://developers.google.com/youtube/registering_an_application).  You MUST register your application as a [Web Application](https://developers.google.com/youtube/registering_an_application#web-applications).
-  * Create a ["Browser Key"](https://developers.google.com/youtube/registering_an_application#Create_API_Keys) NOT an Android key! 
-  * Edit [ApiKey.java](app/src/main/java/com/akoscz/youtube/ApiKey.java) and update `YOUTUBE_API_KEY` with your applications "Browser Key"
+  * Register your application with the [Google Developer Console](https://developers.google.com/youtube/registering_an_application).
+  * Create an ["Api Key"](https://developers.google.com/youtube/registering_an_application#Create_API_Keys)
+  * Edit [ApiKey.java](app/src/main/java/com/akoscz/youtube/ApiKey.java) and update `YOUTUBE_API_KEY` with your applications "Api Key"
   * Edit [YouTubeActivity.java](app/src/main/java/com/akoscz/youtube/YouTubeActivity.java) and update `YOUTUBE_PLAYLIST` to point to your YouTube [playlist](https://www.youtube.com/playlist?list=PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0).
 
-*NOTE:* You MUST have a valid API key for this sample application to work. When you register your application with the Google Developer Console you need to enable the YouTube Data API.  Remember that you need to register a Web Application NOT an Android application because the API key that this sample app uses is the "Browser Key"!
+*NOTE:* You MUST have a valid API key for this sample application to work. Remember, when you register your application with the Google Developer Console you need to enable the YouTube Data API.
   
 ## Dependencies
 
