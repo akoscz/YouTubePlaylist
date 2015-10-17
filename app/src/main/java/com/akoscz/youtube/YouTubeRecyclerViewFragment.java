@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import com.akoscz.youtube.model.Playlist;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Video;
-import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -78,16 +77,10 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         if (getArguments() != null) {
             mPlaylistId = getArguments().getString(ARG_YOUTUBE_PLAYLIST_ID);
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        String json = new Gson().toJson(mPlaylist);
-        outState.putString(KEY_SAVED_INSTANCE_PLAYLIST, json);
     }
 
     @Override
@@ -121,12 +114,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // restore the playlist after an orientation change
-        if (savedInstanceState != null) {
-            mPlaylist = new Gson().fromJson(savedInstanceState.getString(KEY_SAVED_INSTANCE_PLAYLIST), Playlist.class);
-        }
-
-        // if we have a saved playlist, use it to populate the UI right away
+        // if we have a playlist in our retained fragment, use it to populate the UI
         if (mPlaylist != null) {
             initAdapter(mPlaylist);
         } else {

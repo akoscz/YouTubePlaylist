@@ -42,5 +42,4 @@ dependencies {
     compile 'com.google.http-client:google-http-client-android:1.20.0'
     compile 'com.google.api-client:google-api-client-android:1.20.0'
     compile 'com.google.api-client:google-api-client-gson:1.20.0'
-    compile 'com.google.code.gson:gson:2.3.1'
 }
