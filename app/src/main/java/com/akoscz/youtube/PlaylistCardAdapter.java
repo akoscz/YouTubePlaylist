@@ -11,7 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akoscz.youtube.model.Playlist;
-import com.akoscz.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoContentDetails;
+import com.google.api.services.youtube.model.VideoSnippet;
+import com.google.api.services.youtube.model.VideoStatistics;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
@@ -29,7 +32,7 @@ import java.text.DecimalFormat;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * <p/>
- * A RecyclerView.Adapter subclass which adapts the {@link PlaylistItem}'s to CardViews.
+ * A RecyclerView.Adapter subclass which adapts {@link Video}'s to CardViews.
  */
 public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapter.ViewHolder> {
     private static final DecimalFormat sFormatter = new DecimalFormat("#,###,###");
@@ -81,20 +84,29 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final PlaylistItem item = mPlaylist.getItem(position);
-        holder.mTitleText.setText(item.title);
-        holder.mDescriptionText.setText(item.description);
+        if (mPlaylist.size() == 0) {
+            return;
+        }
+
+        final Video video = mPlaylist.get(position);
+        final VideoSnippet videoSnippet = video.getSnippet();
+        final VideoContentDetails videoContentDetails = video.getContentDetails();
+        final VideoStatistics videoStatistics = video.getStatistics();
+
+        holder.mTitleText.setText(videoSnippet.getTitle());
+        holder.mDescriptionText.setText(videoSnippet.getDescription());
 
         // load the video thumbnail image
         Picasso.with(holder.mContext)
-                .load(item.thumbnailUrl)
+                .load(videoSnippet.getThumbnails().getHigh().getUrl())
+                .placeholder(R.drawable.video_placeholder)
                 .into(holder.mThumbnailImage);
 
         // set the click listener to play the video
         holder.mThumbnailImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                holder.mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + item.videoId)));
+                holder.mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + video.getId())));
             }
         });
 
@@ -104,8 +116,8 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
             public void onClick(View view) {
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Watch \"" + item.title + "\" on YouTube");
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "http://www.youtube.com/watch?v=" + item.videoId);
+                sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Watch \"" + videoSnippet.getTitle() + "\" on YouTube");
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "http://www.youtube.com/watch?v=" + video.getId());
                 sendIntent.setType("text/plain");
                 holder.mContext.startActivity(sendIntent);
             }
@@ -113,19 +125,17 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
         holder.mShareIcon.setOnClickListener(shareClickListener);
         holder.mShareText.setOnClickListener(shareClickListener);
 
-        if (item.video != null) {
-            // set the video duration text
-            holder.mDurationText.setText(item.video.duration);
-            // set the video statistics
-            holder.mViewCountText.setText(sFormatter.format(item.video.viewCount));
-            holder.mLikeCountText.setText(sFormatter.format(item.video.likeCount));
-            holder.mDislikeCountText.setText(sFormatter.format(item.video.dislikeCount));
-        }
+        // set the video duration text
+        holder.mDurationText.setText(parseDuration(videoContentDetails.getDuration()));
+        // set the video statistics
+        holder.mViewCountText.setText(sFormatter.format(videoStatistics.getViewCount()));
+        holder.mLikeCountText.setText(sFormatter.format(videoStatistics.getLikeCount()));
+        holder.mDislikeCountText.setText(sFormatter.format(videoStatistics.getDislikeCount()));
 
         if (mListener != null) {
             // get the next playlist page if we're at the end of the current page and we have another page to get
-            final String nextPageToken = mPlaylist.getNextPageToken(position);
-            if (!isEmpty(nextPageToken) && position == mPlaylist.getCount() - 1) {
+            final String nextPageToken = mPlaylist.getNextPageToken();
+            if (!isEmpty(nextPageToken) && position == mPlaylist.size() - 1) {
                 holder.itemView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -138,7 +148,7 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
 
     @Override
     public int getItemCount() {
-        return mPlaylist.getCount();
+        return mPlaylist.size();
     }
 
     private boolean isEmpty(String s) {
@@ -148,4 +158,35 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
         return false;
     }
 
+    private String parseDuration(String in) {
+        boolean hasSeconds = in.indexOf('S') > 0;
+        boolean hasMinutes = in.indexOf('M') > 0;
+
+        String s;
+        if (hasSeconds) {
+            s = in.substring(2, in.length() - 1);
+        } else {
+            s = in.substring(2, in.length());
+        }
+
+        String minutes = "0";
+        String seconds = "00";
+
+        if (hasMinutes && hasSeconds) {
+            String[] split = s.split("M");
+            minutes = split[0];
+            seconds = split[1];
+        } else if (hasMinutes) {
+            minutes = s.substring(0, s.indexOf('M'));
+        } else if (hasSeconds) {
+            seconds = s;
+        }
+
+        // pad seconds with a 0 if less than 2 digits
+        if (seconds.length() == 1) {
+            seconds = "0" + seconds;
+        }
+
+        return minutes + ":" + seconds;
+    }
 }

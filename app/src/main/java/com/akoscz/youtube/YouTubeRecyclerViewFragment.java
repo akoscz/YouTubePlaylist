@@ -6,19 +6,17 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.akoscz.youtube.model.Playlist;
-import com.akoscz.youtube.model.PlaylistItem;
-import com.akoscz.youtube.model.Video;
-import com.google.gson.Gson;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.Video;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.List;
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,19 +46,23 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     private Playlist mPlaylist;
     private RecyclerView.LayoutManager mLayoutManager;
     private PlaylistCardAdapter mAdapter;
+    private YouTube mYouTubeDataApi;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
+     *
+     * @param youTubeDataApi
      * @param playlistId The YouTube Playlist ID parameter string
      * @return A new instance of fragment YouTubeRecyclerViewFragment.
      */
-    public static YouTubeRecyclerViewFragment newInstance(String playlistId) {
+    public static YouTubeRecyclerViewFragment newInstance(YouTube youTubeDataApi, String playlistId) {
         YouTubeRecyclerViewFragment fragment = new YouTubeRecyclerViewFragment();
         Bundle args = new Bundle();
         args.putString(ARG_YOUTUBE_PLAYLIST_ID, playlistId);
         fragment.setArguments(args);
+        fragment.setYouTubeDataApi(youTubeDataApi);
         return fragment;
     }
 
@@ -68,19 +70,17 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mPlaylistId = getArguments().getString(ARG_YOUTUBE_PLAYLIST_ID);
-        }
+    public void setYouTubeDataApi(YouTube api) {
+        mYouTubeDataApi = api;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        String json = new Gson().toJson(mPlaylist);
-        outState.putString(KEY_SAVED_INSTANCE_PLAYLIST, json);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        if (getArguments() != null) {
+            mPlaylistId = getArguments().getString(ARG_YOUTUBE_PLAYLIST_ID);
+        }
     }
 
     @Override
@@ -114,87 +114,46 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // restore the playlist after an orientation change
-        if (savedInstanceState != null) {
-            mPlaylist = new Gson().fromJson(savedInstanceState.getString(KEY_SAVED_INSTANCE_PLAYLIST), Playlist.class);
-        }
-
-        // if we have a saved playlist, ensure the adapter is initialized
+        // if we have a playlist in our retained fragment, use it to populate the UI
         if (mPlaylist != null) {
             initAdapter(mPlaylist);
         } else {
-            // otherwise start loading the first page of our playlist
-            new GetYouTubePlaylistAsyncTask() {
+            // otherwise create an empty playlist
+            mPlaylist = new Playlist(mPlaylistId);
+            // populate an empty UI
+            initAdapter(mPlaylist);
+            // and start fetching the playlist contents
+            new GetPlaylistAsyncTask(mYouTubeDataApi) {
                 @Override
-                public void onPostExecute(JSONObject result) {
-                    if (result == null) return;
-                    handlePlaylistResult(result);
+                public void onPostExecute(Pair<String, List<Video>> result) {
+                    handleGetPlaylistResult(mPlaylist, result);
                 }
-            }.execute(mPlaylistId, null);
+            }.execute(mPlaylist.playlistId, mPlaylist.getNextPageToken());
         }
     }
 
-    private void initAdapter(final Playlist mPlaylist) {
+    private void initAdapter(final Playlist playlist) {
         // create the adapter with our playlist and a callback to handle when we reached the last item
-        mAdapter = new PlaylistCardAdapter(mPlaylist, new LastItemReachedListener() {
+        mAdapter = new PlaylistCardAdapter(playlist, new LastItemReachedListener() {
             @Override
             public void onLastItem(int position, String nextPageToken) {
-                new GetYouTubePlaylistAsyncTask() {
+                new GetPlaylistAsyncTask(mYouTubeDataApi) {
                     @Override
-                    public void onPostExecute(JSONObject result) {
-                        handlePlaylistResult(result);
+                    public void onPostExecute(Pair<String, List<Video>> result) {
+                        handleGetPlaylistResult(playlist, result);
                     }
-                }.execute(mPlaylistId, nextPageToken);
+                }.execute(playlist.playlistId, playlist.getNextPageToken());
             }
         });
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void handlePlaylistResult(JSONObject result) {
-        try {
-            if (result == null) {
-                return;
-            }
-
-            if (mPlaylist == null) {
-                mPlaylist = new Playlist(result);
-                initAdapter(mPlaylist);
-            }
-
-            final Playlist.Page page = mPlaylist.addPage(result);
-            final int itemsPerPage = page.items.size();
-            final int pageNumberBase = page.pageNumber * itemsPerPage;
-
-            // fetch all the video details for the current page of Playlist Items
-            new GetYouTubeVideoAsyncTask() {
-
-                @Override
-                public void onPostExecute(JSONObject result) {
-                    if (result == null) {
-                        return;
-                    }
-
-                    try {
-                        JSONArray resultItems = result.getJSONArray("items");
-                        PlaylistItem playlistItem;
-                        for (int i = 0; i < itemsPerPage; i++) {
-                            playlistItem = page.items.get(i);
-                            playlistItem.video = new Video(resultItems.getJSONObject(i));
-                            // make sure the UI gets updated for the item
-                            mAdapter.notifyItemChanged(pageNumberBase + i);
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.execute(page);
-
-            mAdapter.notifyItemRangeInserted(pageNumberBase, pageNumberBase + itemsPerPage);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    private void handleGetPlaylistResult(Playlist playlist, Pair<String, List<Video>> result) {
+        if (result == null) return;
+        final int positionStart = playlist.size();
+        playlist.setNextPageToken(result.first);
+        playlist.addAll(result.second);
+        mAdapter.notifyItemRangeInserted(positionStart, result.second.size());
     }
 
     /**
