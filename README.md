@@ -21,7 +21,6 @@ And lastly a [retained fragment](http://developer.android.com/guide/topics/resou
 
   * [com.android.support:cardview-v7:23.0.3](https://developer.android.com/tools/support-library/features.html#v7-cardview)
   * [com.android.support:recyclerview-v7:23.0.3](https://developer.android.com/tools/support-library/features.html#v7-recyclerview)
-  * [com.android.support:support-v4:23.0.3](https://developer.android.com/tools/support-library/features.html#v4)
   * [com.android.support:appcompat-v7:23.0.3](https://developer.android.com/tools/support-library/features.html#v7-appcompat)
   * [com.squareup.picasso:picasso:2.5.2](https://github.com/square/picasso)
   * [com.google.apis:google-api-services-youtube:v3-rev149-1.20.0](https://developers.google.com/api-client-library/java/apis/youtube/v3)
