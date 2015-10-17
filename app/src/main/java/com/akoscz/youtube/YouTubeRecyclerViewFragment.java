@@ -134,7 +134,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
 
     private void initAdapter(final Playlist playlist) {
         // create the adapter with our playlist and a callback to handle when we reached the last item
-        mAdapter = new PlaylistCardAdapter(mPlaylist, new LastItemReachedListener() {
+        mAdapter = new PlaylistCardAdapter(playlist, new LastItemReachedListener() {
             @Override
             public void onLastItem(int position, String nextPageToken) {
                 new GetPlaylistAsyncTask(mYouTubeDataApi) {
