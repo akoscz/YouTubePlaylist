@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
     }
     dependencies {
@@ -14,7 +13,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.android.databinding'
 
 repositories {
-    mavenCentral()
     jcenter()
 }
 

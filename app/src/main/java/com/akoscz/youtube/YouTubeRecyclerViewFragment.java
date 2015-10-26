@@ -45,7 +45,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private Playlist mPlaylist;
     private RecyclerView.LayoutManager mLayoutManager;
-    private PlaylistDatabindingCardAdapter mAdapter;
+    private PlaylistCardAdapter mAdapter;
     private YouTube mYouTubeDataApi;
 
     /**
@@ -134,7 +134,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
 
     private void initAdapter(final Playlist playlist) {
         // create the adapter with our playlist and a callback to handle when we reached the last item
-        mAdapter = new PlaylistDatabindingCardAdapter(playlist, new LastItemReachedListener() {
+        mAdapter = new PlaylistCardAdapter(playlist, new LastItemReachedListener() {
             @Override
             public void onLastItem(int position, String nextPageToken) {
                 new GetPlaylistAsyncTask(mYouTubeDataApi) {
