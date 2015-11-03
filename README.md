@@ -30,7 +30,9 @@ And lastly a [retained fragment](http://developer.android.com/guide/topics/resou
   * [com.google.http-client:google-http-client-android:1.20.0](https://github.com/google/google-http-java-client)
   * [com.google.api-client:google-api-client-android:1.20.0](https://github.com/google/google-api-java-client)
   * [com.google.api-client:google-api-client-gson:1.20.0](https://github.com/google/google-api-java-client)
-
+  * [io.reactivex:rxandroid:1.0.1](https://github.com/ReactiveX/RxAndroid)
+  * [io.reactivex:rxjava:1.0.14](https://github.com/ReactiveX/RxJava)
+  
 ## Build Script Dependencies
   * [com.android.tools.build:gradle:1.3.1](https://developer.android.com/tools/revisions/gradle-plugin.html)
   * [com.android.databinding:dataBinder:1.0-rc1](http://developer.android.com/tools/data-binding/guide.html)
