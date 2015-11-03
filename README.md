@@ -36,6 +36,7 @@ And lastly a [retained fragment](http://developer.android.com/guide/topics/resou
 ## Build Script Dependencies
   * [com.android.tools.build:gradle:1.3.1](https://developer.android.com/tools/revisions/gradle-plugin.html)
   * [com.android.databinding:dataBinder:1.0-rc1](http://developer.android.com/tools/data-binding/guide.html)
+  * [me.tatarka:gradle-retrolambda:3.2.3](https://github.com/evant/gradle-retrolambda)
 
 ## Screenshots
 __Phone__: Single Column Portrait and Landscape
