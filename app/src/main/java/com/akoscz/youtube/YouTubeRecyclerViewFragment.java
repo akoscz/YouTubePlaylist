@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -150,7 +151,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     }
 
     private void fetchPlaylist(final Playlist playlist, final YouTube youTubeDataApi) {
-        Observable.create(subscriber -> {
+        Observable.create((Subscriber<? super PlaylistItemListResponse> subscriber) -> {
             try {
                 if(!subscriber.isUnsubscribed()) {
                     PlaylistItemListResponse playlistItemListResponse = youTubeDataApi.playlistItems()
@@ -175,24 +176,25 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             List<String> videoIds = new ArrayList();
 
             // pull out the video id's from the playlist page
-            for (PlaylistItem item : ((PlaylistItemListResponse) playlistItemListResponse).getItems()) {
+            for (PlaylistItem item : playlistItemListResponse.getItems()) {
                 videoIds.add(item.getSnippet().getResourceId().getVideoId());
             }
 
             return videoIds;
         })
-        .map(result -> {
+        .map(videoIdsList -> {
             VideoListResponse videoListResponse = null;
-            try {
                 // get details of the videos on this playlist page
+            try {
                 videoListResponse = mYouTubeDataApi.videos()
                     .list(YOUTUBE_VIDEOS_PART)
                     .setFields(YOUTUBE_VIDEOS_FIELDS)
                     .setKey(ApiKey.YOUTUBE_API_KEY)
-                    .setId(TextUtils.join(",", result))
+                    .setId(TextUtils.join(",", videoIdsList))
                     .execute();
             } catch (IOException e) {
-                e.printStackTrace();
+                // don't swallow the exception.  Let it propagate up to the subscriber
+                throw new RuntimeException(e);
             }
 
             return videoListResponse.getItems();
