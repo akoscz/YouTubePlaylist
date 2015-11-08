@@ -26,7 +26,7 @@ import com.google.api.services.youtube.YouTube;
  * limitations under the License.
  */
 public class YouTubeActivity extends ActionBarActivity {
-    private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0";
+    private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc9CBxr3BVjPTPoDPLdPIFCE";
     private YouTube mYoutubeDataApi;
     private final GsonFactory mJsonFactory = new GsonFactory();
     private final HttpTransport mTransport = AndroidHttp.newCompatibleTransport();
