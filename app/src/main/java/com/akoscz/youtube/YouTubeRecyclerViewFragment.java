@@ -6,17 +6,25 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Pair;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.akoscz.youtube.model.Playlist;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.PlaylistItemListResponse;
+import com.google.api.services.youtube.model.VideoListResponse;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,8 +46,15 @@ import java.util.List;
 public class YouTubeRecyclerViewFragment extends Fragment {
     // the fragment initialization parameter
     private static final String ARG_YOUTUBE_PLAYLIST_ID = "YOUTUBE_PLAYLIST_ID";
-    // key used in the saved instance bundle to persist the playlist
-    private static final String KEY_SAVED_INSTANCE_PLAYLIST = "SAVED_INSTANCE_PLAYLIST";
+
+    // see: https://developers.google.com/youtube/v3/docs/playlistItems/list
+    private static final String YOUTUBE_PLAYLIST_PART = "snippet";
+    private static final String YOUTUBE_PLAYLIST_FIELDS = "pageInfo,nextPageToken,items(id,snippet(resourceId/videoId))";
+    // see: https://developers.google.com/youtube/v3/docs/videos/list
+    private static final String YOUTUBE_VIDEOS_PART = "snippet,contentDetails,statistics"; // video resource properties that the response will include.
+    private static final String YOUTUBE_VIDEOS_FIELDS = "items(id,snippet(title,description,thumbnails/high),contentDetails/duration,statistics)"; // selector specifying which fields to include in a partial response.
+    // the max number of playlist results to receive per request
+    private static final Long YOUTUBE_PLAYLIST_MAX_RESULTS = 10L;
 
     private String mPlaylistId;
     private RecyclerView mRecyclerView;
@@ -123,37 +138,74 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             // populate an empty UI
             initAdapter(mPlaylist);
             // and start fetching the playlist contents
-            new GetPlaylistAsyncTask(mYouTubeDataApi) {
-                @Override
-                public void onPostExecute(Pair<String, List<Video>> result) {
-                    handleGetPlaylistResult(mPlaylist, result);
-                }
-            }.execute(mPlaylist.playlistId, mPlaylist.getNextPageToken());
+            fetchPlaylist(mPlaylist, mYouTubeDataApi);
         }
     }
 
     private void initAdapter(final Playlist playlist) {
         // create the adapter with our playlist and a callback to handle when we reached the last item
-        mAdapter = new PlaylistCardAdapter(playlist, new LastItemReachedListener() {
-            @Override
-            public void onLastItem(int position, String nextPageToken) {
-                new GetPlaylistAsyncTask(mYouTubeDataApi) {
-                    @Override
-                    public void onPostExecute(Pair<String, List<Video>> result) {
-                        handleGetPlaylistResult(playlist, result);
-                    }
-                }.execute(playlist.playlistId, playlist.getNextPageToken());
-            }
-        });
+        mAdapter = new PlaylistCardAdapter(playlist,
+                        (position, nextPageToken) -> fetchPlaylist(playlist, mYouTubeDataApi));
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void handleGetPlaylistResult(Playlist playlist, Pair<String, List<Video>> result) {
-        if (result == null) return;
-        final int positionStart = playlist.size();
-        playlist.setNextPageToken(result.first);
-        playlist.addAll(result.second);
-        mAdapter.notifyItemRangeInserted(positionStart, result.second.size());
+    private void fetchPlaylist(final Playlist playlist, final YouTube youTubeDataApi) {
+        Observable.create(subscriber -> {
+            try {
+                if(!subscriber.isUnsubscribed()) {
+                    PlaylistItemListResponse playlistItemListResponse = youTubeDataApi.playlistItems()
+                        .list(YOUTUBE_PLAYLIST_PART)
+                        .setPlaylistId(playlist.playlistId)
+                        .setPageToken(playlist.getNextPageToken())
+                        .setFields(YOUTUBE_PLAYLIST_FIELDS)
+                        .setMaxResults(YOUTUBE_PLAYLIST_MAX_RESULTS)
+                        .setKey(ApiKey.YOUTUBE_API_KEY)
+                        .execute();
+
+                    playlist.setNextPageToken(playlistItemListResponse.getNextPageToken());
+
+                    subscriber.onNext(playlistItemListResponse);
+                    subscriber.onCompleted();
+                }
+            } catch (IOException e) {
+                subscriber.onError(e);
+            }
+        })
+        .map(playlistItemListResponse -> {
+            List<String> videoIds = new ArrayList();
+
+            // pull out the video id's from the playlist page
+            for (PlaylistItem item : ((PlaylistItemListResponse) playlistItemListResponse).getItems()) {
+                videoIds.add(item.getSnippet().getResourceId().getVideoId());
+            }
+
+            return videoIds;
+        })
+        .map(result -> {
+            VideoListResponse videoListResponse = null;
+            try {
+                // get details of the videos on this playlist page
+                videoListResponse = mYouTubeDataApi.videos()
+                    .list(YOUTUBE_VIDEOS_PART)
+                    .setFields(YOUTUBE_VIDEOS_FIELDS)
+                    .setKey(ApiKey.YOUTUBE_API_KEY)
+                    .setId(TextUtils.join(",", result))
+                    .execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return videoListResponse.getItems();
+        })
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(videoListItems -> {
+            if (videoListItems == null) return;
+
+            final int positionStart = playlist.size();
+            playlist.addAll(videoListItems);
+            mAdapter.notifyItemRangeInserted(positionStart, videoListItems.size());
+        });
     }
 
     /**
