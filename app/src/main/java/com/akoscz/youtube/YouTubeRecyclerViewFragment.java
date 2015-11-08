@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,8 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     private static final String YOUTUBE_VIDEOS_FIELDS = "items(id,snippet(title,description,thumbnails/high),contentDetails/duration,statistics)"; // selector specifying which fields to include in a partial response.
     // the max number of playlist results to receive per request
     private static final Long YOUTUBE_PLAYLIST_MAX_RESULTS = 10L;
+    // number of times to retry network operations
+    private static final int RETRY_COUNT = 5;
 
     private String mPlaylistId;
     private RecyclerView mRecyclerView;
@@ -151,9 +154,11 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     }
 
     private void fetchPlaylist(final Playlist playlist, final YouTube youTubeDataApi) {
+        final String savedNextPageToken = playlist.getNextPageToken();
+
         Observable.create((Subscriber<? super PlaylistItemListResponse> subscriber) -> {
             try {
-                if(!subscriber.isUnsubscribed()) {
+                if (!subscriber.isUnsubscribed()) {
                     PlaylistItemListResponse playlistItemListResponse = youTubeDataApi.playlistItems()
                         .list(YOUTUBE_PLAYLIST_PART)
                         .setPlaylistId(playlist.playlistId)
@@ -184,7 +189,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         })
         .map(videoIdsList -> {
             VideoListResponse videoListResponse = null;
-                // get details of the videos on this playlist page
+            // get details of the videos on this playlist page
             try {
                 videoListResponse = mYouTubeDataApi.videos()
                     .list(YOUTUBE_VIDEOS_PART)
@@ -201,12 +206,17 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         })
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
+        .retry(RETRY_COUNT) // retry before we give up
+        .filter(videoListItems -> (videoListItems != null || videoListItems.size() == 0))
         .subscribe(videoListItems -> {
-            if (videoListItems == null) return;
-
-            final int positionStart = playlist.size();
+            final int startPosition = playlist.size();
             playlist.addAll(videoListItems);
-            mAdapter.notifyItemRangeInserted(positionStart, videoListItems.size());
+            mAdapter.notifyItemRangeInserted(startPosition, videoListItems.size());
+        }, throwable -> {
+            // error case, something went wrong.
+            Log.d("FetchPlaylist", "Resetting next page token. Error: " + throwable.getMessage(), throwable);
+            // reset the next page token
+            playlist.setNextPageToken(savedNextPageToken);
         });
     }
 
