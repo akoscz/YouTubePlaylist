@@ -20,8 +20,6 @@ import com.google.api.services.youtube.model.VideoListResponse;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -61,7 +59,6 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     private static final int RETRY_COUNT = 5;
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
     private PlaylistCardAdapter mAdapter;
 
     @Inject
@@ -71,8 +68,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     Playlist mPlaylist;
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * Use this factory method to create a new instance of this fragment.
      *
      * @return A new instance of fragment YouTubeRecyclerViewFragment.
      */
@@ -106,15 +102,16 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
 
         Resources resources = getResources();
+        RecyclerView.LayoutManager layoutManager;
         if (resources.getBoolean(R.bool.isTablet)) {
             // use a staggered grid layout if we're on a large screen device
-            mLayoutManager = new StaggeredGridLayoutManager(resources.getInteger(R.integer.columns), StaggeredGridLayoutManager.VERTICAL);
+            layoutManager = new StaggeredGridLayoutManager(resources.getInteger(R.integer.columns), StaggeredGridLayoutManager.VERTICAL);
         } else {
             // use a linear layout on phone devices
-            mLayoutManager = new LinearLayoutManager(getActivity());
+            layoutManager = new LinearLayoutManager(getActivity());
         }
 
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setLayoutManager(layoutManager);
 
         return rootView;
     }
@@ -155,18 +152,15 @@ public class YouTubeRecyclerViewFragment extends Fragment {
                     subscriber.onCompleted();
                 }
             } catch (IOException e) {
-                subscriber.onError(e);
+                if (!subscriber.isUnsubscribed()) {
+                    subscriber.onError(e);
+                }
             }
         })
-        .map(playlistItemListResponse -> {
-            List<String> videoIds = new ArrayList();
-
-            // pull out the video id's from the playlist page
-            for (PlaylistItem item : playlistItemListResponse.getItems()) {
-                videoIds.add(item.getSnippet().getResourceId().getVideoId());
-            }
-
-            return videoIds;
+        .flatMap(playlistItemListResponse -> {
+            return Observable.from(playlistItemListResponse.getItems()) // emit list on stream
+                    .map((PlaylistItem item) -> item.getSnippet().getResourceId().getVideoId()) // map to video ids
+                    .toList(); // flatten back to list
         })
         .map(videoIdsList -> {
             VideoListResponse videoListResponse = null;
@@ -188,7 +182,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .retry(RETRY_COUNT) // retry before we give up
-        .filter(videoListItems -> (videoListItems != null || videoListItems.size() == 0))
+        .filter(videoListItems -> (videoListItems != null && videoListItems.size() != 0))
         .subscribe(videoListItems -> {
             final int startPosition = mPlaylist.size();
             mPlaylist.addAll(videoListItems);
