@@ -6,6 +6,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:1.3.1'
         classpath "com.android.databinding:dataBinder:1.0-rc1"
         classpath 'me.tatarka:gradle-retrolambda:3.2.3'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.7'
     }
 }
 
@@ -13,6 +14,7 @@ apply plugin: 'android'
 apply plugin: 'com.android.application'
 apply plugin: 'com.android.databinding'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.neenbedankt.android-apt'
 
 repositories {
     jcenter()
@@ -43,17 +45,30 @@ android {
 }
 
 dependencies {
+    // android ui and framework
     compile 'com.android.support:cardview-v7:23.0.1'
     compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.android.support:appcompat-v7:23.0.1'
+
+    // picasso image fetching
     compile 'com.squareup.picasso:picasso:2.5.2'
+
+    // youtube data api
     compile 'com.google.apis:google-api-services-youtube:v3-rev149-1.20.0'
     compile 'com.google.http-client:google-http-client-android:1.20.0'
     compile 'com.google.api-client:google-api-client-android:1.20.0'
     compile 'com.google.api-client:google-api-client-gson:1.20.0'
+
+    // rxjava
     compile 'io.reactivex:rxandroid:1.0.1'
     compile 'io.reactivex:rxjava:1.0.14'
 
+    // dagger
+    compile 'com.google.dagger:dagger:2.0.1'
+    provided 'org.glassfish:javax.annotation:10.0-b28'
+    apt 'com.google.dagger:dagger-compiler:2.0.1'
+
+    // leak canary
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
 }
