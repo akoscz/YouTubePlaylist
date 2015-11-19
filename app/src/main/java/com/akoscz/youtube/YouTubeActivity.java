@@ -1,16 +1,10 @@
 package com.akoscz.youtube;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.youtube.YouTube;
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,10 +20,6 @@ import com.google.api.services.youtube.YouTube;
  * limitations under the License.
  */
 public class YouTubeActivity extends ActionBarActivity {
-    private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc9CBxr3BVjPTPoDPLdPIFCE";
-    private YouTube mYoutubeDataApi;
-    private final GsonFactory mJsonFactory = new GsonFactory();
-    private final HttpTransport mTransport = AndroidHttp.newCompatibleTransport();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,23 +30,16 @@ public class YouTubeActivity extends ActionBarActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setMessage("Edit ApiKey.java and replace \"YOUR_API_KEY\" with your Applications Browser API Key")
                         .setTitle("Missing API Key")
-                        .setNeutralButton("Ok, I got it!", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finish();
-                            }
+                        .setNeutralButton("Ok, I got it!", (dialogInterface, i) -> {
+                            finish();
                         });
 
             AlertDialog dialog = builder.create();
             dialog.show();
 
         } else if (savedInstanceState == null) {
-            mYoutubeDataApi = new YouTube.Builder(mTransport, mJsonFactory, null)
-                    .setApplicationName(getResources().getString(R.string.app_name))
-                    .build();
-
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, YouTubeRecyclerViewFragment.newInstance(mYoutubeDataApi, YOUTUBE_PLAYLIST))
+                    .add(R.id.container, YouTubeRecyclerViewFragment.newInstance())
                     .commit();
         }
     }
@@ -77,7 +60,7 @@ public class YouTubeActivity extends ActionBarActivity {
         int id = item.getItemId();
         if (id == R.id.action_recyclerview) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, YouTubeRecyclerViewFragment.newInstance(mYoutubeDataApi, YOUTUBE_PLAYLIST))
+                    .replace(R.id.container, YouTubeRecyclerViewFragment.newInstance())
                     .commit();
             return true;
         }

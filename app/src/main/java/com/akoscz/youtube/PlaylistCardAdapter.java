@@ -75,12 +75,7 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
             // get the next playlist page if we're at the end of the current page and we have another page to get
             final String nextPageToken = mPlaylist.getNextPageToken();
             if (!isEmpty(nextPageToken) && position == mPlaylist.size() - 1) {
-                holder.itemView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mListener.onLastItem(position, nextPageToken);
-                    }
-                });
+                holder.itemView.post(() -> mListener.onLastItem(position, nextPageToken));
             }
         }
     }

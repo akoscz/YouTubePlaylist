@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -46,8 +48,6 @@ import rx.schedulers.Schedulers;
  * <p/>
  */
 public class YouTubeRecyclerViewFragment extends Fragment {
-    // the fragment initialization parameter
-    private static final String ARG_YOUTUBE_PLAYLIST_ID = "YOUTUBE_PLAYLIST_ID";
 
     // see: https://developers.google.com/youtube/v3/docs/playlistItems/list
     private static final String YOUTUBE_PLAYLIST_PART = "snippet";
@@ -60,28 +60,24 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     // number of times to retry network operations
     private static final int RETRY_COUNT = 5;
 
-    private String mPlaylistId;
     private RecyclerView mRecyclerView;
-    private Playlist mPlaylist;
     private RecyclerView.LayoutManager mLayoutManager;
     private PlaylistCardAdapter mAdapter;
-    private YouTube mYouTubeDataApi;
+
+    @Inject
+    YouTube mYouTubeDataApi;
+
+    @Inject
+    Playlist mPlaylist;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     *
-     * @param youTubeDataApi
-     * @param playlistId The YouTube Playlist ID parameter string
      * @return A new instance of fragment YouTubeRecyclerViewFragment.
      */
-    public static YouTubeRecyclerViewFragment newInstance(YouTube youTubeDataApi, String playlistId) {
+    public static YouTubeRecyclerViewFragment newInstance() {
         YouTubeRecyclerViewFragment fragment = new YouTubeRecyclerViewFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_YOUTUBE_PLAYLIST_ID, playlistId);
-        fragment.setArguments(args);
-        fragment.setYouTubeDataApi(youTubeDataApi);
         return fragment;
     }
 
@@ -89,17 +85,11 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public void setYouTubeDataApi(YouTube api) {
-        mYouTubeDataApi = api;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        if (getArguments() != null) {
-            mPlaylistId = getArguments().getString(ARG_YOUTUBE_PLAYLIST_ID);
-        }
+        ((YouTubePlaylistApplication)getContext().getApplicationContext()).getComponent().inject(this);
     }
 
     @Override
@@ -133,42 +123,33 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // if we have a playlist in our retained fragment, use it to populate the UI
-        if (mPlaylist != null) {
-            initAdapter(mPlaylist);
-        } else {
-            // otherwise create an empty playlist
-            mPlaylist = new Playlist(mPlaylistId);
-            // populate an empty UI
-            initAdapter(mPlaylist);
-            // and start fetching the playlist contents
-            fetchPlaylist(mPlaylist, mYouTubeDataApi);
-        }
+        initAdapter(mPlaylist);
+        fetchPlaylist();
     }
 
     private void initAdapter(final Playlist playlist) {
         // create the adapter with our playlist and a callback to handle when we reached the last item
         mAdapter = new PlaylistCardAdapter(playlist,
-                        (position, nextPageToken) -> fetchPlaylist(playlist, mYouTubeDataApi));
+                        (position, nextPageToken) -> fetchPlaylist());
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void fetchPlaylist(final Playlist playlist, final YouTube youTubeDataApi) {
-        final String savedNextPageToken = playlist.getNextPageToken();
+    private void fetchPlaylist() {
+        final String savedNextPageToken = mPlaylist.getNextPageToken();
 
         Observable.create((Subscriber<? super PlaylistItemListResponse> subscriber) -> {
             try {
                 if (!subscriber.isUnsubscribed()) {
-                    PlaylistItemListResponse playlistItemListResponse = youTubeDataApi.playlistItems()
+                    PlaylistItemListResponse playlistItemListResponse = mYouTubeDataApi.playlistItems()
                         .list(YOUTUBE_PLAYLIST_PART)
-                        .setPlaylistId(playlist.playlistId)
-                        .setPageToken(playlist.getNextPageToken())
+                        .setPlaylistId(mPlaylist.playlistId)
+                        .setPageToken(mPlaylist.getNextPageToken())
                         .setFields(YOUTUBE_PLAYLIST_FIELDS)
                         .setMaxResults(YOUTUBE_PLAYLIST_MAX_RESULTS)
                         .setKey(ApiKey.YOUTUBE_API_KEY)
                         .execute();
 
-                    playlist.setNextPageToken(playlistItemListResponse.getNextPageToken());
+                    mPlaylist.setNextPageToken(playlistItemListResponse.getNextPageToken());
 
                     subscriber.onNext(playlistItemListResponse);
                     subscriber.onCompleted();
@@ -209,14 +190,14 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         .retry(RETRY_COUNT) // retry before we give up
         .filter(videoListItems -> (videoListItems != null || videoListItems.size() == 0))
         .subscribe(videoListItems -> {
-            final int startPosition = playlist.size();
-            playlist.addAll(videoListItems);
+            final int startPosition = mPlaylist.size();
+            mPlaylist.addAll(videoListItems);
             mAdapter.notifyItemRangeInserted(startPosition, videoListItems.size());
         }, throwable -> {
             // error case, something went wrong.
             Log.d("FetchPlaylist", "Resetting next page token. Error: " + throwable.getMessage(), throwable);
             // reset the next page token
-            playlist.setNextPageToken(savedNextPageToken);
+            mPlaylist.setNextPageToken(savedNextPageToken);
         });
     }
 

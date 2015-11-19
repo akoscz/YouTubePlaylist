@@ -10,7 +10,8 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:name=".YouTubePlaylistApplication">
         <activity
             android:name="com.akoscz.youtube.YouTubeActivity"
             android:label="@string/app_name" >

@@ -1,11 +1,14 @@
-package com.akoscz.youtube.module;
+package com.akoscz.youtube.component;
 
+import com.akoscz.youtube.YouTubeRecyclerViewFragment;
 import com.akoscz.youtube.model.Playlist;
+import com.akoscz.youtube.module.PlaylistModule;
+import com.akoscz.youtube.module.YouTubeDataApiModule;
+import com.google.api.services.youtube.YouTube;
 
 import javax.inject.Singleton;
 
-import dagger.Module;
-import dagger.Provides;
+import dagger.Component;
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,14 +25,10 @@ import dagger.Provides;
  * <p/>
  * <p/>
  */
-@Module
-public class PlaylistModule {
+@Singleton
+@Component(modules = {YouTubeDataApiModule.class, PlaylistModule.class})
+public interface YouTubePlaylistComponent {
 
-    private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc9CBxr3BVjPTPoDPLdPIFCE";
-
-    @Provides @Singleton
-    Playlist providesPlaylist() {
-        return new Playlist(YOUTUBE_PLAYLIST);
-    }
+    void inject(YouTubeRecyclerViewFragment fragment);
 
 }
