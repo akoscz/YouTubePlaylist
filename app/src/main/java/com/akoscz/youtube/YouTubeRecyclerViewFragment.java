@@ -10,12 +10,18 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.akoscz.youtube.model.Playlist;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.google.api.services.youtube.model.Video;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,30 +43,31 @@ import java.util.List;
  */
 public class YouTubeRecyclerViewFragment extends Fragment {
     // the fragment initialization parameter
-    private static final String ARG_YOUTUBE_PLAYLIST_ID = "YOUTUBE_PLAYLIST_ID";
-    // key used in the saved instance bundle to persist the playlist
-    private static final String KEY_SAVED_INSTANCE_PLAYLIST = "SAVED_INSTANCE_PLAYLIST";
+    private static final String ARG_YOUTUBE_PLAYLIST_IDS = "YOUTUBE_PLAYLIST_IDS";
+    private static final int SPINNER_ITEM_LAYOUT_ID = android.R.layout.simple_spinner_item;
+    private static final int SPINNER_ITEM_DROPDOWN_LAYOUT_ID = android.R.layout.simple_spinner_dropdown_item;
 
-    private String mPlaylistId;
+    private String[] mPlaylistIds;
+    private ArrayList<String> mPlaylistTitles;
     private RecyclerView mRecyclerView;
-    private Playlist mPlaylist;
+    private Playlist mPlaylistVideos;
     private RecyclerView.LayoutManager mLayoutManager;
-    private PlaylistCardAdapter mAdapter;
+    private Spinner mPlaylistSpinner;
+    private PlaylistCardAdapter mPlaylistCardAdapter;
     private YouTube mYouTubeDataApi;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     *
      * @param youTubeDataApi
-     * @param playlistId The YouTube Playlist ID parameter string
+     * @param playlistIds A String array of YouTube Playlist IDs
      * @return A new instance of fragment YouTubeRecyclerViewFragment.
      */
-    public static YouTubeRecyclerViewFragment newInstance(YouTube youTubeDataApi, String playlistId) {
+    public static YouTubeRecyclerViewFragment newInstance(YouTube youTubeDataApi, String[] playlistIds) {
         YouTubeRecyclerViewFragment fragment = new YouTubeRecyclerViewFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_YOUTUBE_PLAYLIST_ID, playlistId);
+        args.putStringArray(ARG_YOUTUBE_PLAYLIST_IDS, playlistIds);
         fragment.setArguments(args);
         fragment.setYouTubeDataApi(youTubeDataApi);
         return fragment;
@@ -79,8 +86,24 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         if (getArguments() != null) {
-            mPlaylistId = getArguments().getString(ARG_YOUTUBE_PLAYLIST_ID);
+            mPlaylistIds = getArguments().getStringArray(ARG_YOUTUBE_PLAYLIST_IDS);
         }
+
+        // start fetching the playlist titles
+        new GetPlaylistTitlesAsyncTask(mYouTubeDataApi) {
+            @Override
+            protected void onPostExecute(PlaylistListResponse playlistListResponse) {
+                super.onPostExecute(playlistListResponse);
+                mPlaylistTitles = new ArrayList();
+                for (com.google.api.services.youtube.model.Playlist playlist : playlistListResponse.getItems()) {
+                    mPlaylistTitles.add(playlist.getSnippet().getTitle());
+                }
+                // update the spinner adapter with the titles of the playlists
+                ArrayAdapter<List<String>> spinnerAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_item, mPlaylistTitles);
+                spinnerAdapter.setDropDownViewResource(SPINNER_ITEM_DROPDOWN_LAYOUT_ID);
+                mPlaylistSpinner.setAdapter(spinnerAdapter);
+            }
+        }.execute(mPlaylistIds);
     }
 
     @Override
@@ -107,6 +130,8 @@ public class YouTubeRecyclerViewFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        mPlaylistSpinner = (Spinner)rootView.findViewById(R.id.youtube_playlist_spinner);
+
         return rootView;
     }
 
@@ -115,26 +140,61 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         // if we have a playlist in our retained fragment, use it to populate the UI
-        if (mPlaylist != null) {
-            initAdapter(mPlaylist);
+        if (mPlaylistVideos != null) {
+            // reload the UI with the existing playlist.  No need to fetch it again
+            reloadUi(mPlaylistVideos, false);
         } else {
-            // otherwise create an empty playlist
-            mPlaylist = new Playlist(mPlaylistId);
-            // populate an empty UI
-            initAdapter(mPlaylist);
-            // and start fetching the playlist contents
+            // otherwise create an empty playlist using the first item in the playlist id's array
+            mPlaylistVideos = new Playlist(mPlaylistIds[0]);
+            // and reload the UI with the selected playlist and kick off fetching the playlist content
+            reloadUi(mPlaylistVideos, true);
+        }
+
+        ArrayAdapter<List<String>> spinnerAdapter;
+        // if we don't have the playlist titles yet
+        if (mPlaylistTitles == null || mPlaylistTitles.isEmpty()) {
+            // initialize the spinner with the playlist ID's so that there's something in the UI until the GetPlaylistTitlesAsyncTask finishes
+            spinnerAdapter = new ArrayAdapter(getContext(), SPINNER_ITEM_LAYOUT_ID, Arrays.asList(mPlaylistIds));
+        } else {
+            // otherwise use the playlist titles for the spinner
+            spinnerAdapter = new ArrayAdapter(getContext(), SPINNER_ITEM_LAYOUT_ID, mPlaylistTitles);
+        }
+
+        spinnerAdapter.setDropDownViewResource(SPINNER_ITEM_DROPDOWN_LAYOUT_ID);
+        mPlaylistSpinner.setAdapter(spinnerAdapter);
+
+        // set up the onItemSelectedListener for the spinner
+        mPlaylistSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // reload the UI with the playlist video list of the selected playlist
+                mPlaylistVideos = new Playlist(mPlaylistIds[position]);
+                reloadUi(mPlaylistVideos, true);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    private void reloadUi(final Playlist playlist, boolean fetchPlaylist) {
+        // initialize the cards adapter
+        initCardAdapter(playlist);
+
+        if (fetchPlaylist) {
+            // start fetching the selected playlist contents
             new GetPlaylistAsyncTask(mYouTubeDataApi) {
                 @Override
                 public void onPostExecute(Pair<String, List<Video>> result) {
-                    handleGetPlaylistResult(mPlaylist, result);
+                    handleGetPlaylistResult(playlist, result);
                 }
-            }.execute(mPlaylist.playlistId, mPlaylist.getNextPageToken());
+            }.execute(playlist.playlistId, playlist.getNextPageToken());
         }
     }
 
-    private void initAdapter(final Playlist playlist) {
+    private void initCardAdapter(final Playlist playlist) {
         // create the adapter with our playlist and a callback to handle when we reached the last item
-        mAdapter = new PlaylistCardAdapter(playlist, new LastItemReachedListener() {
+        mPlaylistCardAdapter = new PlaylistCardAdapter(playlist, new LastItemReachedListener() {
             @Override
             public void onLastItem(int position, String nextPageToken) {
                 new GetPlaylistAsyncTask(mYouTubeDataApi) {
@@ -145,7 +205,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
                 }.execute(playlist.playlistId, playlist.getNextPageToken());
             }
         });
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mPlaylistCardAdapter);
     }
 
     private void handleGetPlaylistResult(Playlist playlist, Pair<String, List<Video>> result) {
@@ -153,7 +213,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         final int positionStart = playlist.size();
         playlist.setNextPageToken(result.first);
         playlist.addAll(result.second);
-        mAdapter.notifyItemRangeInserted(positionStart, result.second.size());
+        mPlaylistCardAdapter.notifyItemRangeInserted(positionStart, result.second.size());
     }
 
     /**

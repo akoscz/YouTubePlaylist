@@ -26,7 +26,14 @@ import com.google.api.services.youtube.YouTube;
  * limitations under the License.
  */
 public class YouTubeActivity extends ActionBarActivity {
-    private static final String YOUTUBE_PLAYLIST = "PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0";
+    private static final String[] YOUTUBE_PLAYLISTS = {
+            "PLWz5rJ2EKKc_Tt7q77qwyKRgytF1RzRx8",
+            "PLWz5rJ2EKKc9CBxr3BVjPTPoDPLdPIFCE",
+            "PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0",
+            "PLWz5rJ2EKKc-lJo_RGGXL2Psr8vVCTWjM",
+            "PLWz5rJ2EKKc9ofd2f-_-xmUi07wIGZa1c",
+            "PLWz5rJ2EKKc-riD21lnOjVYBqSkNII3_k"
+    };
     private YouTube mYoutubeDataApi;
     private final GsonFactory mJsonFactory = new GsonFactory();
     private final HttpTransport mTransport = AndroidHttp.newCompatibleTransport();
@@ -56,7 +63,7 @@ public class YouTubeActivity extends ActionBarActivity {
                     .build();
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, YouTubeRecyclerViewFragment.newInstance(mYoutubeDataApi, YOUTUBE_PLAYLIST))
+                    .add(R.id.container, YouTubeRecyclerViewFragment.newInstance(mYoutubeDataApi, YOUTUBE_PLAYLISTS))
                     .commit();
         }
     }
@@ -77,7 +84,7 @@ public class YouTubeActivity extends ActionBarActivity {
         int id = item.getItemId();
         if (id == R.id.action_recyclerview) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, YouTubeRecyclerViewFragment.newInstance(mYoutubeDataApi, YOUTUBE_PLAYLIST))
+                    .replace(R.id.container, YouTubeRecyclerViewFragment.newInstance(mYoutubeDataApi, YOUTUBE_PLAYLISTS))
                     .commit();
             return true;
         }
