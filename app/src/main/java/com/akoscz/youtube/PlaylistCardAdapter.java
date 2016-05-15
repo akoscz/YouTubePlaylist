@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.akoscz.youtube.model.Playlist;
+import com.akoscz.youtube.model.PlaylistVideos;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoSnippet;
@@ -36,7 +36,7 @@ import java.text.DecimalFormat;
  */
 public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapter.ViewHolder> {
     private static final DecimalFormat sFormatter = new DecimalFormat("#,###,###");
-    private final Playlist mPlaylist;
+    private final PlaylistVideos mPlaylistVideos;
     private final YouTubeRecyclerViewFragment.LastItemReachedListener mListener;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -66,8 +66,8 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
         }
     }
 
-    public PlaylistCardAdapter(Playlist playlist, YouTubeRecyclerViewFragment.LastItemReachedListener lastItemReachedListener) {
-        mPlaylist = playlist;
+    public PlaylistCardAdapter(PlaylistVideos playlistVideos, YouTubeRecyclerViewFragment.LastItemReachedListener lastItemReachedListener) {
+        mPlaylistVideos = playlistVideos;
         mListener = lastItemReachedListener;
     }
 
@@ -84,11 +84,11 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        if (mPlaylist.size() == 0) {
+        if (mPlaylistVideos.size() == 0) {
             return;
         }
 
-        final Video video = mPlaylist.get(position);
+        final Video video = mPlaylistVideos.get(position);
         final VideoSnippet videoSnippet = video.getSnippet();
         final VideoContentDetails videoContentDetails = video.getContentDetails();
         final VideoStatistics videoStatistics = video.getStatistics();
@@ -134,8 +134,8 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
 
         if (mListener != null) {
             // get the next playlist page if we're at the end of the current page and we have another page to get
-            final String nextPageToken = mPlaylist.getNextPageToken();
-            if (!isEmpty(nextPageToken) && position == mPlaylist.size() - 1) {
+            final String nextPageToken = mPlaylistVideos.getNextPageToken();
+            if (!isEmpty(nextPageToken) && position == mPlaylistVideos.size() - 1) {
                 holder.itemView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -148,7 +148,7 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
 
     @Override
     public int getItemCount() {
-        return mPlaylist.size();
+        return mPlaylistVideos.size();
     }
 
     private boolean isEmpty(String s) {

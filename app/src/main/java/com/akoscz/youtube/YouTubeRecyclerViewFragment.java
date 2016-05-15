@@ -14,7 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.akoscz.youtube.model.Playlist;
+import com.akoscz.youtube.model.PlaylistVideos;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.google.api.services.youtube.model.Video;
@@ -50,7 +50,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     private String[] mPlaylistIds;
     private ArrayList<String> mPlaylistTitles;
     private RecyclerView mRecyclerView;
-    private Playlist mPlaylistVideos;
+    private PlaylistVideos mPlaylistVideos;
     private RecyclerView.LayoutManager mLayoutManager;
     private Spinner mPlaylistSpinner;
     private PlaylistCardAdapter mPlaylistCardAdapter;
@@ -145,7 +145,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             reloadUi(mPlaylistVideos, false);
         } else {
             // otherwise create an empty playlist using the first item in the playlist id's array
-            mPlaylistVideos = new Playlist(mPlaylistIds[0]);
+            mPlaylistVideos = new PlaylistVideos(mPlaylistIds[0]);
             // and reload the UI with the selected playlist and kick off fetching the playlist content
             reloadUi(mPlaylistVideos, true);
         }
@@ -168,7 +168,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // reload the UI with the playlist video list of the selected playlist
-                mPlaylistVideos = new Playlist(mPlaylistIds[position]);
+                mPlaylistVideos = new PlaylistVideos(mPlaylistIds[position]);
                 reloadUi(mPlaylistVideos, true);
             }
 
@@ -177,42 +177,42 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         });
     }
 
-    private void reloadUi(final Playlist playlist, boolean fetchPlaylist) {
+    private void reloadUi(final PlaylistVideos playlistVideos, boolean fetchPlaylist) {
         // initialize the cards adapter
-        initCardAdapter(playlist);
+        initCardAdapter(playlistVideos);
 
         if (fetchPlaylist) {
-            // start fetching the selected playlist contents
+            // start fetching the selected playlistVideos contents
             new GetPlaylistAsyncTask(mYouTubeDataApi) {
                 @Override
                 public void onPostExecute(Pair<String, List<Video>> result) {
-                    handleGetPlaylistResult(playlist, result);
+                    handleGetPlaylistResult(playlistVideos, result);
                 }
-            }.execute(playlist.playlistId, playlist.getNextPageToken());
+            }.execute(playlistVideos.playlistId, playlistVideos.getNextPageToken());
         }
     }
 
-    private void initCardAdapter(final Playlist playlist) {
-        // create the adapter with our playlist and a callback to handle when we reached the last item
-        mPlaylistCardAdapter = new PlaylistCardAdapter(playlist, new LastItemReachedListener() {
+    private void initCardAdapter(final PlaylistVideos playlistVideos) {
+        // create the adapter with our playlistVideos and a callback to handle when we reached the last item
+        mPlaylistCardAdapter = new PlaylistCardAdapter(playlistVideos, new LastItemReachedListener() {
             @Override
             public void onLastItem(int position, String nextPageToken) {
                 new GetPlaylistAsyncTask(mYouTubeDataApi) {
                     @Override
                     public void onPostExecute(Pair<String, List<Video>> result) {
-                        handleGetPlaylistResult(playlist, result);
+                        handleGetPlaylistResult(playlistVideos, result);
                     }
-                }.execute(playlist.playlistId, playlist.getNextPageToken());
+                }.execute(playlistVideos.playlistId, playlistVideos.getNextPageToken());
             }
         });
         mRecyclerView.setAdapter(mPlaylistCardAdapter);
     }
 
-    private void handleGetPlaylistResult(Playlist playlist, Pair<String, List<Video>> result) {
+    private void handleGetPlaylistResult(PlaylistVideos playlistVideos, Pair<String, List<Video>> result) {
         if (result == null) return;
-        final int positionStart = playlist.size();
-        playlist.setNextPageToken(result.first);
-        playlist.addAll(result.second);
+        final int positionStart = playlistVideos.size();
+        playlistVideos.setNextPageToken(result.first);
+        playlistVideos.addAll(result.second);
         mPlaylistCardAdapter.notifyItemRangeInserted(positionStart, result.second.size());
     }
 

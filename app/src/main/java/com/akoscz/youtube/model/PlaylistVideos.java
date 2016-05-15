@@ -18,11 +18,11 @@ import java.util.List;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class Playlist extends ArrayList<Video>{
+public class PlaylistVideos extends ArrayList<Video>{
     public final String playlistId;
     private String mNextPageToken;
 
-    public Playlist(String id) {
+    public PlaylistVideos(String id) {
         playlistId = id;
     }
 
