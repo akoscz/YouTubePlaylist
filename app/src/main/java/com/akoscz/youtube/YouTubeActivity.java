@@ -25,7 +25,7 @@ import com.google.api.services.youtube.YouTube;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class YouTubeActivity extends ActionBarActivity {
+public class YouTubeActivity extends AppCompatActivity {
     private static final String[] YOUTUBE_PLAYLISTS = {
             "PLWz5rJ2EKKc_Tt7q77qwyKRgytF1RzRx8",
             "PLWz5rJ2EKKc9CBxr3BVjPTPoDPLdPIFCE",
