@@ -3,7 +3,7 @@ package com.akoscz.youtube;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -25,7 +25,7 @@ import com.google.api.services.youtube.YouTube;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class YouTubeActivity extends ActionBarActivity {
+public class YouTubeActivity extends AppCompatActivity {
     private static final String[] YOUTUBE_PLAYLISTS = {
             "PLWz5rJ2EKKc_Tt7q77qwyKRgytF1RzRx8",
             "PLWz5rJ2EKKc9CBxr3BVjPTPoDPLdPIFCE",
