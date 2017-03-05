@@ -21,7 +21,7 @@ import com.squareup.picasso.RequestCreator;
  * limitations under the License.
  */
 public class BindingUtils {
-    @BindingAdapter({"app:imageUrl", "app:placeHolder"})
+    @BindingAdapter({"imageUrl", "placeHolder"})
     public static void loadImage(ImageView view, String url, int placeHolder) {
         RequestCreator requestCreator =
                 Picasso.with(view.getContext()).load(url);
@@ -31,7 +31,7 @@ public class BindingUtils {
         requestCreator.into(view);
     }
 
-    @BindingAdapter({"app:videoDuration"})
+    @BindingAdapter({"videoDuration"})
     public static void parseDuration(TextView view, String duration) {
         boolean hasSeconds = duration.indexOf('S') > 0;
         boolean hasMinutes = duration.indexOf('M') > 0;
