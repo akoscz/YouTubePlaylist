@@ -93,7 +93,10 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         new GetPlaylistTitlesAsyncTask(mYouTubeDataApi) {
             @Override
             protected void onPostExecute(PlaylistListResponse playlistListResponse) {
-                super.onPostExecute(playlistListResponse);
+                // if we didn't receive a response for the playlist titles, then there's nothing to update
+                if (playlistListResponse == null)
+                    return;
+
                 mPlaylistTitles = new ArrayList();
                 for (com.google.api.services.youtube.model.Playlist playlist : playlistListResponse.getItems()) {
                     mPlaylistTitles.add(playlist.getSnippet().getTitle());
