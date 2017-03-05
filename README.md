@@ -22,21 +22,21 @@ And lastly a [retained fragment](http://developer.android.com/guide/topics/resou
   
 ## Application Dependencies
 
-  * [com.android.support:cardview-v7:23.0.3](https://developer.android.com/tools/support-library/features.html#v7-cardview)
-  * [com.android.support:recyclerview-v7:23.0.3](https://developer.android.com/tools/support-library/features.html#v7-recyclerview)
-  * [com.android.support:appcompat-v7:23.0.3](https://developer.android.com/tools/support-library/features.html#v7-appcompat)
+  * [com.android.support:cardview-v7:25.2.0](https://developer.android.com/tools/support-library/features.html#v7-cardview)
+  * [com.android.support:recyclerview-v7:25.2.0](https://developer.android.com/tools/support-library/features.html#v7-recyclerview)
+  * [com.android.support:appcompat-v7:25.2.0](https://developer.android.com/tools/support-library/features.html#v7-appcompat)
   * [com.squareup.picasso:picasso:2.5.2](https://github.com/square/picasso)
-  * [com.google.apis:google-api-services-youtube:v3-rev149-1.20.0](https://developers.google.com/api-client-library/java/apis/youtube/v3)
+  * [com.google.apis:google-api-services-youtube:v3-rev182-1.22.0](https://developers.google.com/api-client-library/java/apis/youtube/v3)
   * [com.google.http-client:google-http-client-android:1.20.0](https://github.com/google/google-http-java-client)
   * [com.google.api-client:google-api-client-android:1.20.0](https://github.com/google/google-api-java-client)
   * [com.google.api-client:google-api-client-gson:1.20.0](https://github.com/google/google-api-java-client)
+  * [com.google.dagger:dagger:2.10-rc2](https://github.com/google/dagger)
   * [io.reactivex:rxandroid:1.0.1](https://github.com/ReactiveX/RxAndroid)
   * [io.reactivex:rxjava:1.0.14](https://github.com/ReactiveX/RxJava)
   
 ## Build Script Dependencies
-  * [com.android.tools.build:gradle:1.3.1](https://developer.android.com/tools/revisions/gradle-plugin.html)
-  * [com.android.databinding:dataBinder:1.0-rc1](http://developer.android.com/tools/data-binding/guide.html)
-  * [me.tatarka:gradle-retrolambda:3.2.3](https://github.com/evant/gradle-retrolambda)
+  * [com.android.tools.build:gradle:2.3.0](https://developer.android.com/tools/revisions/gradle-plugin.html)
+  * [me.tatarka:gradle-retrolambda:3.6.0](https://github.com/evant/gradle-retrolambda)
 
 ## Screenshots
 __Phone__: Single Column Portrait and Landscape
