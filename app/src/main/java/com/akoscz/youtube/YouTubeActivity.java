@@ -43,6 +43,11 @@ public class YouTubeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.youtube_activity);
 
+        
+        if(!isConnected()){
+            Toast.makeText(YouTubeActivity.this,"No Internet Connection Detected",Toast.LENGTH_LONG).show();
+        }
+        
         if (ApiKey.YOUTUBE_API_KEY.startsWith("YOUR_API_KEY")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setMessage("Edit ApiKey.java and replace \"YOUR_API_KEY\" with your Applications Browser API Key")
@@ -74,6 +79,13 @@ public class YouTubeActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.you_tube, menu);
         return true;
+    }
+    
+    public boolean isConnected() {
+        ConnectivityManager cm =
+            (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     @Override
