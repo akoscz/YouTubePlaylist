@@ -1,6 +1,7 @@
 package com.akoscz.youtube;
 
 import android.content.res.Resources;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -55,6 +56,8 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     private Spinner mPlaylistSpinner;
     private PlaylistCardAdapter mPlaylistCardAdapter;
     private YouTube mYouTubeDataApi;
+    private ProgressDialog progressBar;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -92,6 +95,12 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         // start fetching the playlist titles
         new GetPlaylistTitlesAsyncTask(mYouTubeDataApi) {
             @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                showProgressDialog(true);
+            }
+            
+            @Override
             protected void onPostExecute(PlaylistListResponse playlistListResponse) {
                 // if we didn't receive a response for the playlist titles, then there's nothing to update
                 if (playlistListResponse == null)
@@ -105,6 +114,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
                 ArrayAdapter<List<String>> spinnerAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_item, mPlaylistTitles);
                 spinnerAdapter.setDropDownViewResource(SPINNER_ITEM_DROPDOWN_LAYOUT_ID);
                 mPlaylistSpinner.setAdapter(spinnerAdapter);
+                showProgressDialog(false)
             }
         }.execute(mPlaylistIds);
     }
@@ -130,6 +140,8 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             // use a linear layout on phone devices
             mLayoutManager = new LinearLayoutManager(getActivity());
         }
+        
+        progressBar = new ProgressDialog(getContext());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -217,6 +229,14 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         playlistVideos.setNextPageToken(result.first);
         playlistVideos.addAll(result.second);
         mPlaylistCardAdapter.notifyItemRangeInserted(positionStart, result.second.size());
+    }
+    
+    private void showProgressDialog(Boolean shouldShould){
+        if (shouldShould){
+            progressBar.show();
+        } else{
+            progressBar.dismiss();
+        }
     }
 
     /**
