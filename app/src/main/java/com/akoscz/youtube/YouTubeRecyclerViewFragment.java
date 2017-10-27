@@ -56,7 +56,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     private Spinner mPlaylistSpinner;
     private PlaylistCardAdapter mPlaylistCardAdapter;
     private YouTube mYouTubeDataApi;
-    private ProgressDialog progressBar;
+    private ProgressDialog mProgressDialog;
 
 
     /**
@@ -97,7 +97,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                showProgressDialog(true);
+                mProgressDialog.show();
             }
             
             @Override
@@ -114,7 +114,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
                 ArrayAdapter<List<String>> spinnerAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_item, mPlaylistTitles);
                 spinnerAdapter.setDropDownViewResource(SPINNER_ITEM_DROPDOWN_LAYOUT_ID);
                 mPlaylistSpinner.setAdapter(spinnerAdapter);
-                showProgressDialog(false)
+                mProgressDialog.hide();
             }
         }.execute(mPlaylistIds);
     }
@@ -141,7 +141,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             mLayoutManager = new LinearLayoutManager(getActivity());
         }
         
-        progressBar = new ProgressDialog(getContext());
+        mProgressDialog = new ProgressDialog(getContext());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -231,13 +231,6 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         mPlaylistCardAdapter.notifyItemRangeInserted(positionStart, result.second.size());
     }
     
-    private void showProgressDialog(Boolean shouldShould){
-        if (shouldShould){
-            progressBar.show();
-        } else{
-            progressBar.dismiss();
-        }
-    }
 
     /**
      * Interface used by the {@link PlaylistCardAdapter} to inform us that we reached the last item in the list.
