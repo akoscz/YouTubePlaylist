@@ -121,18 +121,18 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         initAdapter(mPlaylist);
-        fetchPlaylist();
+        fetchPlaylist(mPlaylist);
     }
 
     private void initAdapter(final Playlist playlist) {
         // create the adapter with our playlist and a callback to handle when we reached the last item
         mAdapter = new PlaylistCardAdapter(playlist,
-                        (position, nextPageToken) -> fetchPlaylist());
+                        (position, nextPageToken) -> fetchPlaylist(playlist));
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void fetchPlaylist() {
-        final String savedNextPageToken = mPlaylist.getNextPageToken();
+    private void fetchPlaylist(final Playlist playlist) {
+        final String savedNextPageToken = playlist.getNextPageToken();
 
         Observable.create((Subscriber<? super PlaylistItemListResponse> subscriber) -> {
             try {
@@ -146,7 +146,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
                         .setKey(ApiKey.YOUTUBE_API_KEY)
                         .execute();
 
-                    mPlaylist.setNextPageToken(playlistItemListResponse.getNextPageToken());
+                    playlist.setNextPageToken(playlistItemListResponse.getNextPageToken());
 
                     subscriber.onNext(playlistItemListResponse);
                     subscriber.onCompleted();
@@ -184,14 +184,14 @@ public class YouTubeRecyclerViewFragment extends Fragment {
         .retry(RETRY_COUNT) // retry before we give up
         .filter(videoListItems -> (videoListItems != null && videoListItems.size() != 0))
         .subscribe(videoListItems -> {
-            final int startPosition = mPlaylist.size();
-            mPlaylist.addAll(videoListItems);
+            final int startPosition = playlist.size();
+            playlist.addAll(videoListItems);
             mAdapter.notifyItemRangeInserted(startPosition, videoListItems.size());
         }, throwable -> {
             // error case, something went wrong.
             Log.d("FetchPlaylist", "Resetting next page token. Error: " + throwable.getMessage(), throwable);
             // reset the next page token
-            mPlaylist.setNextPageToken(savedNextPageToken);
+            playlist.setNextPageToken(savedNextPageToken);
         });
     }
 
