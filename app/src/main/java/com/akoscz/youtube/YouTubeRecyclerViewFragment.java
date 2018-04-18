@@ -91,7 +91,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // set the Picasso debug indicator only for debug builds
-        Picasso.with(getActivity()).setIndicatorsEnabled(BuildConfig.DEBUG);
+        Picasso.get().setIndicatorsEnabled(BuildConfig.DEBUG);
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.youtube_recycler_view_fragment, container, false);

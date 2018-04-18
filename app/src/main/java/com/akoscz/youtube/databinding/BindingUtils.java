@@ -23,8 +23,7 @@ import com.squareup.picasso.RequestCreator;
 public class BindingUtils {
     @BindingAdapter({"imageUrl", "placeHolder"})
     public static void loadImage(ImageView view, String url, int placeHolder) {
-        RequestCreator requestCreator =
-                Picasso.with(view.getContext()).load(url);
+        RequestCreator requestCreator = Picasso.get().load(url);
         if (placeHolder != 0) {
             requestCreator.placeholder(placeHolder);
         }
