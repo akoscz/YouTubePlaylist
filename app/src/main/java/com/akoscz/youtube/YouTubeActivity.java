@@ -2,7 +2,7 @@ package com.akoscz.youtube;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -19,7 +19,7 @@ import android.view.MenuItem;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class YouTubeActivity extends ActionBarActivity {
+public class YouTubeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
