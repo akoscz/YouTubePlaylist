@@ -1,11 +1,15 @@
 package com.akoscz.youtube;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.HttpTransport;
@@ -43,21 +47,21 @@ public class YouTubeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.youtube_activity);
 
-        
-        if(!isConnected()){
-            Toast.makeText(YouTubeActivity.this,"No Internet Connection Detected",Toast.LENGTH_LONG).show();
+        if (!isConnected()) {
+            Toast.makeText(YouTubeActivity.this, "No Internet Connection Detected", Toast.LENGTH_LONG).show();
         }
-        
+
+        //noinspection ConstantConditions
         if (ApiKey.YOUTUBE_API_KEY.startsWith("YOUR_API_KEY")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setMessage("Edit ApiKey.java and replace \"YOUR_API_KEY\" with your Applications Browser API Key")
-                        .setTitle("Missing API Key")
-                        .setNeutralButton("Ok, I got it!", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finish();
-                            }
-                        });
+                    .setMessage("Edit ApiKey.java and replace \"YOUR_API_KEY\" with your Applications Browser API Key")
+                    .setTitle("Missing API Key")
+                    .setNeutralButton("Ok, I got it!", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            finish();
+                        }
+                    });
 
             AlertDialog dialog = builder.create();
             dialog.show();
@@ -75,15 +79,13 @@ public class YouTubeActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.you_tube, menu);
         return true;
     }
-    
+
     public boolean isConnected() {
-        ConnectivityManager cm =
-            (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
@@ -102,4 +104,5 @@ public class YouTubeActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

@@ -92,6 +92,8 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             mPlaylistIds = getArguments().getStringArray(ARG_YOUTUBE_PLAYLIST_IDS);
         }
 
+        mProgressDialog = new ProgressDialog(getContext());
+
         // start fetching the playlist titles
         new GetPlaylistTitlesAsyncTask(mYouTubeDataApi) {
             @Override
@@ -140,8 +142,6 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             // use a linear layout on phone devices
             mLayoutManager = new LinearLayoutManager(getActivity());
         }
-        
-        mProgressDialog = new ProgressDialog(getContext());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
