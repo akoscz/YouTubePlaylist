@@ -1,24 +1,28 @@
 buildscript {
     repositories {
+        jcenter()
         mavenCentral()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:4.0.1'
     }
 }
 apply plugin: 'com.android.application'
 
 repositories {
     mavenCentral()
+    google()
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 29
+    buildToolsVersion '25.0.3'
+    flavorDimensions "default"
 
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 25
+        minSdkVersion 14
+        targetSdkVersion 29
     }
     buildTypes {
         release {
@@ -33,12 +37,12 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:cardview-v7:25.2.0'
-    compile 'com.android.support:recyclerview-v7:25.2.0'
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.google.apis:google-api-services-youtube:v3-rev182-1.22.0'
-    compile 'com.google.http-client:google-http-client-android:1.20.0'
-    compile 'com.google.api-client:google-api-client-android:1.20.0'
-    compile 'com.google.api-client:google-api-client-gson:1.20.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.google.apis:google-api-services-youtube:v3-rev182-1.22.0'
+    implementation 'com.google.http-client:google-http-client-android:1.20.0'
+    implementation 'com.google.api-client:google-api-client-android:1.20.0'
+    implementation 'com.google.api-client:google-api-client-gson:1.20.0'
 }
