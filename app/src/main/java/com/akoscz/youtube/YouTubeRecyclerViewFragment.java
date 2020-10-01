@@ -3,10 +3,10 @@ package com.akoscz.youtube;
 import android.content.res.Resources;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,12 +92,16 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             mPlaylistIds = getArguments().getStringArray(ARG_YOUTUBE_PLAYLIST_IDS);
         }
 
+        mProgressDialog = new ProgressDialog(getContext());
+
         // start fetching the playlist titles
         new GetPlaylistTitlesAsyncTask(mYouTubeDataApi) {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                mProgressDialog.show();
+                if (mProgressDialog != null) {
+                    mProgressDialog.show();
+                }
             }
             
             @Override
@@ -122,7 +126,7 @@ public class YouTubeRecyclerViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // set the Picasso debug indicator only for debug builds
-        Picasso.with(getActivity()).setIndicatorsEnabled(BuildConfig.DEBUG);
+        Picasso.get().setIndicatorsEnabled(BuildConfig.DEBUG);
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.youtube_recycler_view_fragment, container, false);
@@ -140,8 +144,6 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             // use a linear layout on phone devices
             mLayoutManager = new LinearLayoutManager(getActivity());
         }
-        
-        mProgressDialog = new ProgressDialog(getContext());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -200,9 +202,19 @@ public class YouTubeRecyclerViewFragment extends Fragment {
             // start fetching the selected playlistVideos contents
             new GetPlaylistAsyncTask(mYouTubeDataApi) {
                 @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    if (mProgressDialog != null) {
+                        mProgressDialog.show();
+                    }
+                }
+
+                @Override
                 public void onPostExecute(Pair<String, List<Video>> result) {
                     handleGetPlaylistResult(playlistVideos, result);
+                    mProgressDialog.dismiss();
                 }
+
             }.execute(playlistVideos.playlistId, playlistVideos.getNextPageToken());
         }
     }

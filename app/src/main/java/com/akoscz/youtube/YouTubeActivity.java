@@ -1,11 +1,15 @@
 package com.akoscz.youtube;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.HttpTransport;
@@ -45,7 +49,7 @@ public class YouTubeActivity extends AppCompatActivity {
 
         
         if(!isConnected()){
-            Toast.makeText(YouTubeActivity.this,"No Internet Connection Detected",Toast.LENGTH_LONG).show();
+            Toast.makeText(YouTubeActivity.this,"No Internet Connection Detected", Toast.LENGTH_LONG).show();
         }
         
         if (ApiKey.YOUTUBE_API_KEY.startsWith("YOUR_API_KEY")) {
