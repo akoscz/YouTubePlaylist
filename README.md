@@ -19,14 +19,14 @@ And lastly a [retained fragment](http://developer.android.com/guide/topics/resou
   
 ## Dependencies
 
-  * [com.android.support:cardview-v7:25.2.0](https://developer.android.com/tools/support-library/features.html#v7-cardview)
-  * [com.android.support:recyclerview-v7:25.2.0](https://developer.android.com/tools/support-library/features.html#v7-recyclerview)
-  * [com.android.support:appcompat-v7:25.2.0](https://developer.android.com/tools/support-library/features.html#v7-appcompat)
-  * [com.squareup.picasso:picasso:2.5.2](https://github.com/square/picasso)
-  * [com.google.apis:google-api-services-youtube:v3-rev182-1.22.0](https://developers.google.com/api-client-library/java/apis/youtube/v3)
-  * [com.google.http-client:google-http-client-android:1.20.0](https://github.com/google/google-http-java-client)
-  * [com.google.api-client:google-api-client-android:1.20.0](https://github.com/google/google-api-java-client)
-  * [com.google.api-client:google-api-client-gson:1.20.0](https://github.com/google/google-api-java-client)
+  * [androidx.cardview:cardview:1.0.0](https://developer.android.com/jetpack/androidx/releases/cardview)
+  * [androidx.recyclerview:recyclerview:1.1.0](https://developer.android.com/jetpack/androidx/releases/recyclerview)
+  * [androidx.appcompat:appcompat:1.2.0](https://developer.android.com/jetpack/androidx/releases/appcompat)
+  * [com.squareup.picasso:picasso:2.71828](https://github.com/square/picasso)
+  * [com.google.apis:google-api-services-youtube:v3-rev20200618-1.30.9](https://developers.google.com/api-client-library/java/apis/youtube/v3)
+  * [com.google.http-client:google-http-client-android:1.37.0](https://github.com/google/google-http-java-client)
+  * [com.google.api-client:google-api-client-android:1.30.11](https://github.com/google/google-api-java-client)
+  * [com.google.api-client:google-api-client-gson:1.30.11](https://github.com/google/google-api-java-client)
 
 ## Screenshots
 __Phone__: Single Column Portrait and Landscape
