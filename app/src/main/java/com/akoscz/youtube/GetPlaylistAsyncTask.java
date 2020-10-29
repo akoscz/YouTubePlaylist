@@ -1,7 +1,6 @@
 package com.akoscz.youtube;
 
 import android.os.AsyncTask;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
@@ -9,11 +8,11 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.Video;
-import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoListResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,7 +59,7 @@ public abstract class GetPlaylistAsyncTask extends AsyncTask<String, Void, Pair<
         PlaylistItemListResponse playlistItemListResponse;
         try {
             playlistItemListResponse = mYouTubeDataApi.playlistItems()
-                    .list(YOUTUBE_PLAYLIST_PART)
+                    .list(Collections.singletonList(YOUTUBE_PLAYLIST_PART))
                     .setPlaylistId(playlistId)
                     .setPageToken(nextPageToken)
                     .setFields(YOUTUBE_PLAYLIST_FIELDS)
@@ -88,10 +87,10 @@ public abstract class GetPlaylistAsyncTask extends AsyncTask<String, Void, Pair<
         VideoListResponse videoListResponse = null;
         try {
             videoListResponse = mYouTubeDataApi.videos()
-                    .list(YOUTUBE_VIDEOS_PART)
+                    .list(Collections.singletonList(YOUTUBE_VIDEOS_PART))
                     .setFields(YOUTUBE_VIDEOS_FIELDS)
                     .setKey(ApiKey.YOUTUBE_API_KEY)
-                    .setId(TextUtils.join(",", videoIds)).execute();
+                    .setId(videoIds).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }

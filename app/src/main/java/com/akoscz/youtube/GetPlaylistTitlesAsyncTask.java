@@ -1,12 +1,12 @@
 package com.akoscz.youtube;
 
 import android.os.AsyncTask;
-import android.text.TextUtils;
-
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistListResponse;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * This AsyncTask will get the titles of all the playlists that are passed in as a parameter.
@@ -30,8 +30,8 @@ public class GetPlaylistTitlesAsyncTask  extends AsyncTask<String[], Void, Playl
         PlaylistListResponse playlistListResponse;
         try {
             playlistListResponse = mYouTubeDataApi.playlists()
-                .list(YOUTUBE_PLAYLIST_PART)
-                .setId(TextUtils.join(",", playlistIds))
+                .list(Collections.singletonList(YOUTUBE_PLAYLIST_PART))
+                .setId(Arrays.asList(playlistIds))
                 .setFields(YOUTUBE_PLAYLIST_FIELDS)
                 .setKey(ApiKey.YOUTUBE_API_KEY)
                 .execute();
