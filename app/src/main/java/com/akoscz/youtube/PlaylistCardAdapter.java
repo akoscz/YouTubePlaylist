@@ -3,7 +3,7 @@ package com.akoscz.youtube;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,7 +97,7 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
         holder.mDescriptionText.setText(videoSnippet.getDescription());
 
         // load the video thumbnail image
-        Picasso.with(holder.mContext)
+        Picasso.get()
                 .load(videoSnippet.getThumbnails().getHigh().getUrl())
                 .placeholder(R.drawable.video_placeholder)
                 .into(holder.mThumbnailImage);
