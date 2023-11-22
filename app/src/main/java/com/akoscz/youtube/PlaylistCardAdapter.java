@@ -17,6 +17,7 @@ import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
 import com.squareup.picasso.Picasso;
 
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 
 /**
@@ -84,7 +85,7 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        if (mPlaylistVideos.size() == 0) {
+        if (mPlaylistVideos.isEmpty()) {
             return;
         }
 
@@ -127,10 +128,16 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
 
         // set the video duration text
         holder.mDurationText.setText(parseDuration(videoContentDetails.getDuration()));
+
+        // get the video statistics
+        BigInteger viewCount = videoStatistics.getViewCount();
+        BigInteger likeCount = videoStatistics.getLikeCount();
+        BigInteger dislikeCount = videoStatistics.getDislikeCount();
+
         // set the video statistics
-        holder.mViewCountText.setText(sFormatter.format(videoStatistics.getViewCount()));
-        holder.mLikeCountText.setText(sFormatter.format(videoStatistics.getLikeCount()));
-        holder.mDislikeCountText.setText(sFormatter.format(videoStatistics.getDislikeCount()));
+        holder.mViewCountText.setText(sFormatter.format(viewCount == null ? 0 : viewCount));
+        holder.mLikeCountText.setText(sFormatter.format(likeCount == null ? 0 : likeCount));
+        holder.mDislikeCountText.setText(sFormatter.format(dislikeCount == null ? 0 : dislikeCount));
 
         if (mListener != null) {
             // get the next playlist page if we're at the end of the current page and we have another page to get
@@ -152,10 +159,7 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
     }
 
     private boolean isEmpty(String s) {
-        if (s == null || s.length() == 0) {
-            return true;
-        }
-        return false;
+        return s == null || s.isEmpty();
     }
 
     private String parseDuration(String in) {
@@ -166,7 +170,7 @@ public class PlaylistCardAdapter extends RecyclerView.Adapter<PlaylistCardAdapte
         if (hasSeconds) {
             s = in.substring(2, in.length() - 1);
         } else {
-            s = in.substring(2, in.length());
+            s = in.substring(2);
         }
 
         String minutes = "0";
